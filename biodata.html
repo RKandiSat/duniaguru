@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classio — Biodata Guru</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234F46E5'/><text y='22' x='8' font-size='18' font-family='serif' font-weight='bold' fill='white'>C</text></svg>">
+<style>
+/* ═══ RESET & BASE ═══ */
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif;background:#060612;color:white;-webkit-font-smoothing:antialiased;}
+
+/* ═══ BACKGROUND ═══ */
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.18;pointer-events:none;}
+.b1{width:500px;height:500px;background:radial-gradient(circle,#4F46E5,#7C3AED);top:-150px;left:-100px;animation:drift1 18s ease-in-out infinite;}
+.b2{width:400px;height:400px;background:radial-gradient(circle,#7C3AED,#4F46E5);bottom:-100px;right:-80px;animation:drift2 22s ease-in-out infinite;}
+.b3{width:300px;height:300px;background:radial-gradient(circle,#38BDF8,#0EA5E9);top:40%;left:30%;animation:drift3 15s ease-in-out infinite;}
+.dot-grid{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(99,102,241,0.12) 1px,transparent 1px);background-size:28px 28px;}
+@keyframes drift1{0%,100%{transform:translate(0,0);}50%{transform:translate(60px,40px);}}
+@keyframes drift2{0%,100%{transform:translate(0,0);}50%{transform:translate(-40px,-60px);}}
+@keyframes drift3{0%,100%{transform:translate(0,0);}50%{transform:translate(30px,-30px);}}
+
+/* ═══ LAYOUT ═══ */
+.layout{position:relative;z-index:1;display:flex;height:100vh;width:100%;}
+
+/* ═══ SIDEBAR ═══ */
+.sidebar{width:220px;flex-shrink:0;background:rgba(255,255,255,0.03);border-right:1px solid rgba(255,255,255,0.07);backdrop-filter:blur(20px);display:flex;flex-direction:column;padding:20px 0;}
+
+.brand{display:flex;align-items:center;gap:10px;padding:0 18px 20px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.brand-icon{width:34px;height:34px;background:linear-gradient(135deg,#4F46E5,#7C3AED);border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Nunito',sans-serif;font-weight:900;font-size:1rem;color:white;}
+.brand-name{font-family:'Nunito',sans-serif;font-weight:900;font-size:0.9rem;color:white;}
+.brand-ver{font-size:0.6rem;color:rgba(255,255,255,0.3);margin-top:1px;}
+
+/* Progress steps */
+.steps{padding:16px 14px;flex:1;}
+.steps-title{font-size:0.58rem;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;padding-left:4px;}
+
+.step-btn{width:100%;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;border:none;background:none;cursor:pointer;transition:all 0.2s;margin-bottom:3px;text-align:left;}
+.step-btn.active{background:rgba(79,70,229,0.18);border:1px solid rgba(79,70,229,0.3);}
+.step-btn:not(.active):hover{background:rgba(255,255,255,0.04);}
+.step-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;flex-shrink:0;transition:all 0.2s;}
+.step-btn.done .step-num{background:#10B981;color:white;}
+.step-btn.active .step-num{background:linear-gradient(135deg,#4F46E5,#7C3AED);color:white;}
+.step-btn:not(.done):not(.active) .step-num{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);}
+.step-text{font-size:0.72rem;font-weight:600;transition:color 0.2s;}
+.step-btn.active .step-text{color:white;}
+.step-btn.done .step-text{color:#34D399;}
+.step-btn:not(.done):not(.active) .step-text{color:rgba(255,255,255,0.3);}
+
+/* Progress bar */
+.prog-wrap{padding:14px 18px;border-top:1px solid rgba(255,255,255,0.06);}
+.prog-label{font-size:0.62rem;color:rgba(255,255,255,0.3);margin-bottom:6px;display:flex;justify-content:space-between;}
+.prog-bar{height:4px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,#4F46E5,#7C3AED);border-radius:99px;transition:width 0.4s ease;}
+
+/* ═══ MAIN FORM AREA ═══ */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+/* Header */
+.form-header{padding:14px 24px;border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.form-header-title{font-family:'Nunito',sans-serif;font-weight:900;font-size:1rem;color:white;}
+.form-header-sub{font-size:0.7rem;color:rgba(255,255,255,0.35);margin-top:2px;}
+.status-badge{display:none;align-items:center;gap:7px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.25);border-radius:20px;padding:5px 12px;}
+.status-badge.show{display:flex;}
+.status-dot{width:7px;height:7px;border-radius:50%;background:#10B981;animation:pulse 2s infinite;}
+.status-label{font-size:0.72rem;font-weight:700;color:#34D399;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
+
+/* Form panels */
+.form-body{flex:1;overflow:hidden;position:relative;}
+.form-panel{position:absolute;inset:0;padding:16px 24px;display:none;overflow-y:auto;}
+.form-panel.active{display:block;}
+
+/* Section title */
+.section-title{font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:900;color:white;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.section-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;}
+
+/* Form grid */
+.form-grid{display:grid;gap:8px;}
+.col-2{grid-template-columns:1fr 1fr;}
+.col-3{grid-template-columns:1fr 1fr 1fr;}
+.col-4{grid-template-columns:1fr 1fr 1fr 1fr;}
+.col-5{grid-template-columns:1fr 1fr 1fr 1fr 1fr;}
+.span-2{grid-column:span 2;}
+.span-3{grid-column:span 3;}
+.span-4{grid-column:span 4;}
+
+/* Form field */
+.field{display:flex;flex-direction:column;gap:4px;}
+.field label{font-size:0.62rem;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.5px;}
+.field input,.field select,.field textarea{
+    background:rgba(255,255,255,0.05);
+    border:1.5px solid rgba(255,255,255,0.08);
+    border-radius:8px;
+    padding:7px 10px;
+    font-family:'Plus Jakarta Sans',sans-serif;
+    font-size:0.78rem;
+    color:white;
+    outline:none;
+    transition:all 0.2s;
+    width:100%;
+}
+.field input::placeholder,.field textarea::placeholder{color:rgba(255,255,255,0.15);}
+.field input:focus,.field select:focus,.field textarea:focus{
+    border-color:rgba(99,102,241,0.5);
+    background:rgba(255,255,255,0.08);
+    box-shadow:0 0 0 3px rgba(79,70,229,0.12);
+}
+.field select{cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(255,255,255,0.3)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;}
+.field select option{background:#1a1830;color:white;}
+.field input[type="date"]{color-scheme:dark;}
+.field input[type="number"]{-moz-appearance:textfield;}
+
+/* Address grid */
+.addr-grid{display:grid;grid-template-columns:3fr 1fr 2fr 2fr 2fr 1fr;gap:8px;}
+
+/* Multi-select pills */
+.multi-wrap{display:flex;flex-wrap:wrap;gap:4px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.08);border-radius:8px;padding:6px 8px;min-height:36px;cursor:pointer;transition:all 0.2s;}
+.multi-wrap:focus-within{border-color:rgba(99,102,241,0.5);}
+.pill{display:inline-flex;align-items:center;gap:4px;background:rgba(79,70,229,0.25);border:1px solid rgba(79,70,229,0.4);border-radius:5px;padding:2px 7px;font-size:0.66rem;font-weight:600;color:#a5b4fc;}
+.pill .remove{cursor:pointer;opacity:0.6;font-size:0.7rem;}
+.pill .remove:hover{opacity:1;}
+.multi-select{position:relative;}
+.multi-dropdown{position:absolute;top:100%;left:0;right:0;z-index:100;background:#1a1830;border:1.5px solid rgba(99,102,241,0.3);border-radius:8px;max-height:160px;overflow-y:auto;margin-top:3px;box-shadow:0 8px 24px rgba(0,0,0,0.4);}
+.multi-option{padding:6px 10px;font-size:0.75rem;color:rgba(255,255,255,0.7);cursor:pointer;transition:all 0.15s;}
+.multi-option:hover{background:rgba(79,70,229,0.2);color:white;}
+.multi-option.selected{color:#818CF8;background:rgba(79,70,229,0.1);}
+
+/* Lain-lain input */
+.other-wrap{margin-top:4px;display:none;}
+.other-wrap.show{display:block;}
+
+/* ═══ NAVIGATION BUTTONS ═══ */
+.form-footer{padding:12px 24px;border-top:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:rgba(255,255,255,0.02);}
+.btn-prev{padding:8px 18px;border-radius:8px;border:1.5px solid rgba(255,255,255,0.12);background:none;color:rgba(255,255,255,0.5);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.78rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.btn-prev:hover{border-color:rgba(255,255,255,0.25);color:white;}
+.btn-prev:disabled{opacity:0.3;cursor:not-allowed;}
+.btn-next{padding:8px 22px;border-radius:8px;border:none;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 12px rgba(79,70,229,0.35);}
+.btn-next:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(79,70,229,0.45);}
+.btn-submit{padding:8px 24px;border-radius:8px;border:none;background:linear-gradient(135deg,#059669,#10B981);color:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 12px rgba(16,185,129,0.35);}
+.btn-submit:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(16,185,129,0.45);}
+
+.step-indicator{font-size:0.7rem;color:rgba(255,255,255,0.3);font-weight:600;}
+
+/* Error & success */
+.field-error{font-size:0.62rem;color:#F87171;margin-top:2px;display:none;}
+.field.invalid input,.field.invalid select{border-color:rgba(248,113,113,0.5);}
+.field.invalid .field-error{display:block;}
+
+/* Supabase config notice */
+.config-notice{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:0.7rem;color:rgba(251,191,36,0.8);}
+</style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<!-- Background -->
+<div class="bg">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <div class="dot-grid"></div>
+</div>
+
+<div class="layout">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <div class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">C</div>
+      <div>
+        <div class="brand-name">Classio</div>
+        <div class="brand-ver">Biodata Guru</div>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="steps-title">Langkah Pengisian</div>
+
+      <button class="step-btn active" onclick="goToStep(1)" id="sb-1">
+        <div class="step-num">1</div>
+        <div class="step-text">Data Pribadi</div>
+      </button>
+      <button class="step-btn" onclick="goToStep(2)" id="sb-2">
+        <div class="step-num">2</div>
+        <div class="step-text">Kepegawaian</div>
+      </button>
+      <button class="step-btn" onclick="goToStep(3)" id="sb-3">
+        <div class="step-num">3</div>
+        <div class="step-text">Pendidikan</div>
+      </button>
+      <button class="step-btn" onclick="goToStep(4)" id="sb-4">
+        <div class="step-num">4</div>
+        <div class="step-text">Penugasan Mengajar</div>
+      </button>
+      <button class="step-btn" onclick="goToStep(5)" id="sb-5">
+        <div class="step-num">5</div>
+        <div class="step-text">Akun Aplikasi</div>
+      </button>
+    </div>
+
+    <div class="prog-wrap">
+      <div class="prog-label">
+        <span>Progres Pengisian</span>
+        <span id="prog-pct">0%</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ MAIN ═══ -->
+  <div class="main">
+
+    <!-- Header -->
+    <div class="form-header">
+      <div>
+        <div class="form-header-title" id="panel-title">Data Pribadi — Identitas Utama</div>
+        <div class="form-header-sub" id="panel-sub">Isi dengan data sesuai dokumen resmi (KTP/ijazah)</div>
+      </div>
+      <div class="status-badge" id="status-badge">
+        <div class="status-dot"></div>
+        <div class="status-label">Akun Telah Aktif</div>
+      </div>
+    </div>
+
+    <!-- Form panels -->
+    <div class="form-body">
+
+      <!-- ── STEP 1: Data Pribadi ── -->
+      <div class="form-panel active" id="panel-1">
+
+        <div class="form-grid col-4" style="margin-bottom:8px;">
+          <div class="field span-2">
+            <label>Nama Lengkap *</label>
+            <input type="text" id="nama_lengkap" placeholder="Sesuai KTP/dokumen resmi">
+            <div class="field-error">Nama lengkap wajib diisi</div>
+          </div>
+          <div class="field">
+            <label>Gelar Depan</label>
+            <select id="gelar_depan">
+              <option value="">— Tidak Ada —</option>
+              <option>Prof.</option><option>Dr.</option><option>Drs.</option><option>Dra.</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Gelar Belakang</label>
+            <select id="gelar_belakang">
+              <option value="">— Tidak Ada —</option>
+              <optgroup label="Diploma">
+                <option>A.Md.</option><option>A.Md.Pd.</option><option>A.Md.Kep.</option>
+              </optgroup>
+              <optgroup label="Sarjana (S1)">
+                <option>S.Pd.</option><option>S.Pd.I.</option><option>S.Si.</option>
+                <option>S.Kom.</option><option>S.T.</option><option>S.E.</option>
+                <option>S.H.</option><option>S.Hum.</option><option>S.S.</option>
+                <option>S.Sos.</option><option>S.Ag.</option><option>S.Farm.</option>
+                <option>S.Gz.</option><option>S.Ked.</option><option>S.Kep.</option>
+                <option>S.IP.</option><option>S.I.Kom.</option><option>S.Ak.</option>
+              </optgroup>
+              <optgroup label="Magister (S2)">
+                <option>M.Pd.</option><option>M.Pd.I.</option><option>M.Si.</option>
+                <option>M.T.</option><option>M.Hum.</option><option>M.Kom.</option>
+                <option>M.M.</option><option>M.H.</option><option>M.Ag.</option>
+                <option>M.Kes.</option><option>M.A.</option>
+              </optgroup>
+              <optgroup label="Doktor (S3)">
+                <option>Ph.D.</option><option>D.Sc.</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-grid col-4" style="margin-bottom:8px;">
+          <div class="field">
+            <label>Jenis Kelamin *</label>
+            <select id="jenis_kelamin">
+              <option value="">— Pilih —</option>
+              <option>Laki-laki</option><option>Perempuan</option>
+            </select>
+          </div>
+          <div class="field span-2">
+            <label>NIK (16 Digit) *</label>
+            <input type="text" id="nik" placeholder="3271xxxxxxxxxx" maxlength="16" pattern="[0-9]{16}">
+            <div class="field-error">NIK harus 16 digit angka</div>
+          </div>
+          <div class="field">
+            <label>Agama *</label>
+            <select id="agama">
+              <option value="">— Pilih —</option>
+              <option>Islam</option><option>Kristen</option><option>Katolik</option>
+              <option>Hindu</option><option>Buddha</option><option>Konghucu</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-grid col-4" style="margin-bottom:8px;">
+          <div class="field span-2">
+            <label>Tempat Lahir *</label>
+            <input type="text" id="tempat_lahir" placeholder="Nama kota/kabupaten tempat lahir">
+          </div>
+          <div class="field">
+            <label>Tanggal Lahir *</label>
+            <input type="date" id="tanggal_lahir">
+          </div>
+          <div class="field">
+            <label>Nomor HP / WhatsApp *</label>
+            <input type="tel" id="no_hp" placeholder="08xx-xxxx-xxxx">
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:8px;">
+          <label>Alamat Email *</label>
+          <input type="email" id="email" placeholder="nama@sekolah.sch.id">
+        </div>
+
+        <!-- Address block -->
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:10px 12px;">
+          <div style="font-size:0.62rem;font-weight:700;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Alamat Rumah Lengkap</div>
+          <div class="form-grid col-2" style="margin-bottom:6px;">
+            <div class="field span-2">
+              <label>Jalan / Nama Jalan + Nomor Rumah *</label>
+              <input type="text" id="alamat_jalan" placeholder="Jl. Contoh No. 10">
+            </div>
+          </div>
+          <div class="addr-grid">
+            <div class="field"><label>Kelurahan/Desa</label><input type="text" id="kelurahan" placeholder="Kelurahan"></div>
+            <div class="field"><label>RT/RW</label><input type="text" id="rt_rw" placeholder="003/007"></div>
+            <div class="field"><label>Kecamatan</label><input type="text" id="kecamatan" placeholder="Kecamatan"></div>
+            <div class="field"><label>Kota / Kabupaten</label><input type="text" id="kota" placeholder="Kota / Kab."></div>
+            <div class="field"><label>Provinsi</label><input type="text" id="provinsi" placeholder="Provinsi"></div>
+            <div class="field"><label>Kode Pos</label><input type="text" id="kode_pos" placeholder="12345" maxlength="5"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── STEP 2: Kepegawaian ── -->
+      <div class="form-panel" id="panel-2">
+        <div class="form-grid col-2" style="margin-bottom:8px;">
+          <div class="field">
+            <label>NUPTK</label>
+            <input type="text" id="nuptk" placeholder="16 digit NUPTK" maxlength="16">
+          </div>
+          <div class="field">
+            <label>NIP / NI P3K</label>
+            <input type="text" id="nip" placeholder="Kosongkan jika tidak ada">
+          </div>
+        </div>
+
+        <div class="form-grid col-2" style="margin-bottom:8px;">
+          <div class="field">
+            <label>Status Kepegawaian *</label>
+            <select id="status_kepegawaian">
+              <option value="">— Pilih Status —</option>
+              <option>PNS</option><option>P3K</option>
+              <option>Guru Tetap Yayasan</option>
+              <option>Guru Honorer</option><option>Guru Kontrak</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Jabatan *</label>
+            <select id="jabatan">
+              <option value="">— Pilih Jabatan —</option>
+              <option>Guru Kelas</option><option>Guru Mata Pelajaran</option>
+              <option>Wali Kelas</option><option>Kepala Sekolah</option>
+              <option>Wakil Kepala Sekolah</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-grid col-2" style="margin-bottom:8px;">
+          <div class="field">
+            <label>Tanggal Mulai Bertugas (TMT) *</label>
+            <input type="date" id="tmt">
+          </div>
+          <div class="field">
+            <label>Status Sertifikasi Guru *</label>
+            <select id="status_sertifikasi">
+              <option value="">— Pilih —</option>
+              <option>Sudah Sertifikasi</option>
+              <option>Belum Sertifikasi</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-grid col-1" style="margin-bottom:8px;">
+          <div class="field">
+            <label>Nomor Sertifikat Pendidik</label>
+            <input type="text" id="no_sertifikat" placeholder="Isi jika sudah sertifikasi">
+          </div>
+        </div>
+
+        <!-- Info box -->
+        <div style="background:rgba(79,70,229,0.06);border:1px solid rgba(79,70,229,0.15);border-radius:10px;padding:12px 14px;margin-top:4px;">
+          <div style="font-size:0.7rem;color:rgba(165,180,252,0.8);line-height:1.7;">
+            <b style="color:#a5b4fc;">ℹ️ Informasi:</b><br>
+            • <b>NUPTK</b> — Nomor Unik Pendidik dan Tenaga Kependidikan, diterbitkan oleh Kemdikbud.<br>
+            • <b>NIP</b> — Nomor Induk Pegawai, hanya untuk guru PNS.<br>
+            • <b>NI P3K</b> — Nomor Induk untuk guru P3K (PPPK).<br>
+            • Nomor Sertifikat hanya wajib diisi jika status sertifikasi: <b>Sudah Sertifikasi</b>.
+          </div>
+        </div>
+      </div>
+
+      <!-- ── STEP 3: Pendidikan ── -->
+      <div class="form-panel" id="panel-3">
+        <div class="form-grid col-2" style="margin-bottom:8px;">
+          <div class="field">
+            <label>Pendidikan Terakhir *</label>
+            <select id="pendidikan_terakhir">
+              <option value="">— Pilih —</option>
+              <option>SMA / SMK / MA</option>
+              <option>D1 (Diploma 1)</option>
+              <option>D2 (Diploma 2)</option>
+              <option>D3 (Diploma 3)</option>
+              <option>D4 (Diploma 4 / Sarjana Terapan)</option>
+              <option>S1 (Sarjana)</option>
+              <option>S2 (Magister)</option>
+              <option>S3 (Doktor)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Tahun Lulus *</label>
+            <input type="number" id="tahun_lulus" placeholder="Contoh: 2015" min="1970" max="2030">
+          </div>
+        </div>
+
+        <div class="form-grid col-1" style="margin-bottom:8px;">
+          <div class="field">
+            <label>Program Studi / Jurusan *</label>
+            <input type="text" id="prodi" placeholder="Contoh: Pendidikan Bahasa Indonesia">
+          </div>
+        </div>
+
+        <div class="form-grid col-1" style="margin-bottom:8px;">
+          <div class="field">
+            <label>Nama Perguruan Tinggi / Universitas *</label>
+            <input type="text" id="universitas" placeholder="Contoh: Universitas Negeri Malang (UM)">
+          </div>
+        </div>
+
+        <!-- Motivational block -->
+        <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);border-radius:10px;padding:14px;margin-top:8px;">
+          <div style="font-size:0.75rem;font-weight:700;color:#34D399;margin-bottom:6px;">🎓 Pendidikan Membentuk Masa Depan</div>
+          <div style="font-size:0.7rem;color:rgba(255,255,255,0.45);line-height:1.7;">
+            Riwayat pendidikan formal digunakan untuk verifikasi kualifikasi mengajar sesuai ketentuan 
+            Permendikbud. Pastikan data diisi sesuai ijazah resmi terakhir yang dimiliki.
+          </div>
+        </div>
+      </div>
+
+      <!-- ── STEP 4: Penugasan Mengajar ── -->
+      <div class="form-panel" id="panel-4">
+
+        <!-- Mata Pelajaran (multi-select) -->
+        <div class="field multi-select" style="margin-bottom:8px;">
+          <label>Mata Pelajaran yang Diampu *</label>
+          <div class="multi-wrap" id="mapel-wrap" onclick="toggleDropdown('mapel-dd')">
+            <div id="mapel-pills" style="display:flex;flex-wrap:wrap;gap:4px;flex:1;"></div>
+            <span style="font-size:0.7rem;color:rgba(255,255,255,0.2);align-self:center;flex-shrink:0;">▼</span>
+          </div>
+          <div class="multi-dropdown" id="mapel-dd" style="display:none;">
+            <div id="mapel-opts"></div>
+          </div>
+        </div>
+
+        <!-- Kelas (multi-select) -->
+        <div class="field multi-select" style="margin-bottom:8px;">
+          <label>Tingkat / Kelas yang Diajar *</label>
+          <div class="multi-wrap" id="kelas-wrap" onclick="toggleDropdown('kelas-dd')">
+            <div id="kelas-pills" style="display:flex;flex-wrap:wrap;gap:4px;flex:1;"></div>
+            <span style="font-size:0.7rem;color:rgba(255,255,255,0.2);align-self:center;flex-shrink:0;">▼</span>
+          </div>
+          <div class="multi-dropdown" id="kelas-dd" style="display:none;">
+            <div id="kelas-opts"></div>
+          </div>
+        </div>
+
+        <div class="form-grid col-2" style="margin-bottom:8px;">
+          <div class="field">
+            <label>Jumlah Jam Mengajar / Minggu *</label>
+            <input type="number" id="jam_mengajar" placeholder="Contoh: 24" min="1" max="48">
+          </div>
+          <div class="field">
+            <label>Tugas Tambahan</label>
+            <select id="tugas_tambahan" onchange="checkOther()">
+              <option value="">— Tidak Ada —</option>
+              <option>Wali Kelas</option>
+              <option>Pembina OSIS</option>
+              <option>Pembina Pramuka</option>
+              <option>Kepala Laboratorium</option>
+              <option>Kepala Perpustakaan</option>
+              <option>Koordinator Kurikulum</option>
+              <option>Koordinator Kesiswaan</option>
+              <option>Koordinator Humas</option>
+              <option>Koordinator Sarana & Prasarana</option>
+              <option>Guru Piket</option>
+              <option>Pembina UKS</option>
+              <option>Pembina Ekskul</option>
+              <option>Operator Sekolah</option>
+              <option>Bendahara Sekolah</option>
+              <option>Lain-lain</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="other-wrap" id="tugas-other-wrap">
+          <div class="field">
+            <label>Tugas Tambahan Lainnya</label>
+            <input type="text" id="tugas_lainnya" placeholder="Tuliskan tugas tambahan spesifik">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── STEP 5: Akun Aplikasi ── -->
+      <div class="form-panel" id="panel-5">
+
+        <div class="form-grid col-2" style="margin-bottom:8px;">
+          <div class="field">
+            <label>Username / Email Login *</label>
+            <input type="email" id="username_email" placeholder="email untuk login ke Classio">
+          </div>
+          <div class="field">
+            <label>Role / Hak Akses *</label>
+            <select id="role">
+              <option value="">— Pilih Role —</option>
+              <option>Guru Reguler</option>
+              <option>Admin Mapel</option>
+              <option>Wali Kelas</option>
+              <option>Admin Sekolah</option>
+              <option>Kepala Sekolah</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Summary card -->
+        <div style="background:rgba(79,70,229,0.06);border:1px solid rgba(79,70,229,0.15);border-radius:12px;padding:14px;margin-top:4px;" id="summary-card">
+          <div style="font-size:0.75rem;font-weight:800;color:#a5b4fc;margin-bottom:10px;font-family:'Nunito',sans-serif;">📋 Ringkasan Data yang Akan Disimpan</div>
+          <div id="summary-content" style="font-size:0.72rem;color:rgba(255,255,255,0.5);line-height:1.9;"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer nav -->
+    <div class="form-footer">
+      <button class="btn-prev" id="btn-prev" onclick="prevStep()" disabled>← Sebelumnya</button>
+      <div class="step-indicator" id="step-ind">Langkah 1 dari 5</div>
+      <button class="btn-next" id="btn-next" onclick="nextStep()">Lanjut →</button>
+    </div>
+
+  </div><!-- /main -->
+
+</div><!-- /layout -->
+
+<script>
+const sb = supabase.createClient('https://geabugomvgsgemlmxggx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlYWJ1Z29tdmdzZ2VtbG14Z2d4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwNzU1NTgsImV4cCI6MjEwMTY1MTU1OH0.1dReCnfV-u45mqo1__AD7NNwjRQUWuPzV3WX1RRliZE');
+
+// ── AUTH: localStorage check ──────────────────────────
+if (localStorage.getItem('classio_logged_in') !== 'true') {
+    window.location.href = 'index.html';
+}
+
+let _userId    = localStorage.getItem('classio_user_id') || null;
+let _userEmail = localStorage.getItem('classio_user_email') || null;
+
+(async () => {
+    // Skip Supabase check untuk demo user
+    if (_userId === 'demo-user' || !_userId) return;
+
+    // Cek sesi Supabase untuk user nyata
+    try {
+        const { data: { session } } = await sb.auth.getSession();
+        if (session) {
+            _userId    = session.user.id;
+            _userEmail = session.user.email;
+        }
+
+        // Pre-fill form jika data sudah pernah diisi
+        if (_userId) {
+            const { data: existing } = await sb
+                .from('teachers')
+                .select('*')
+                .eq('id', _userId)
+                .single();
+
+            if (existing) prefillForm(existing);
+        }
+    } catch(e) {
+        console.warn('Session check failed:', e);
+    }
+})();
+
+function prefillForm(d) {
+    const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+    set('nama_lengkap', d.nama_lengkap); set('gelar_depan', d.gelar_depan);
+    set('gelar_belakang', d.gelar_belakang); set('jenis_kelamin', d.jenis_kelamin);
+    set('nik', d.nik); set('agama', d.agama); set('tempat_lahir', d.tempat_lahir);
+    set('tanggal_lahir', d.tanggal_lahir); set('no_hp', d.no_hp);
+    set('email', d.email || _userEmail);
+    set('alamat_jalan', d.alamat_jalan); set('kelurahan', d.kelurahan);
+    set('rt_rw', d.rt_rw); set('kecamatan', d.kecamatan); set('kota', d.kota);
+    set('provinsi', d.provinsi); set('kode_pos', d.kode_pos);
+    set('nuptk', d.nuptk); set('nip', d.nip);
+    set('status_kepegawaian', d.status_kepegawaian); set('jabatan', d.jabatan);
+    set('tmt', d.tmt); set('status_sertifikasi', d.status_sertifikasi);
+    set('no_sertifikat', d.no_sertifikat); set('pendidikan_terakhir', d.pendidikan_terakhir);
+    set('tahun_lulus', d.tahun_lulus); set('prodi', d.prodi);
+    set('universitas', d.universitas); set('jam_mengajar', d.jam_mengajar);
+    set('username_email', d.username_email || _userEmail); set('role', d.role);
+    if (Array.isArray(d.mata_pelajaran)) {
+        selectedMapel = [...d.mata_pelajaran];
+        buildMultiOpts('mapel','mapel-opts','mapel-pills',selectedMapel,MAPEL_LIST);
+    }
+    if (Array.isArray(d.kelas_diajar)) {
+        selectedKelas = [...d.kelas_diajar];
+        buildMultiOpts('kelas','kelas-opts','kelas-pills',selectedKelas,KELAS_LIST);
+    }
+    if (d.tugas_tambahan) {
+        const td = document.getElementById('tugas_tambahan');
+        if (td) {
+            const opt = Array.from(td.options).find(o => o.value === d.tugas_tambahan);
+            td.value = opt ? d.tugas_tambahan : 'Lain-lain';
+            if (!opt) { document.getElementById('tugas_lainnya').value = d.tugas_tambahan; checkOther(); }
+        }
+    }
+}
+
+// ══════════════════════════════════════════════════════
+// STEP NAVIGATION
+// ══════════════════════════════════════════════════════
+let currentStep = 1;
+const TOTAL_STEPS = 5;
+
+const STEP_INFO = {
+    1: { title:'Data Pribadi — Identitas Utama', sub:'Isi dengan data sesuai dokumen resmi (KTP)' },
+    2: { title:'Identitas Kepegawaian & Status Profesional', sub:'Data kepegawaian dan status mengajar' },
+    3: { title:'Riwayat Pendidikan Formal', sub:'Data ijazah dan latar belakang akademik' },
+    4: { title:'Data Penugasan Mengajar', sub:'Mata pelajaran, kelas, dan tugas tambahan' },
+    5: { title:'Data Akses & Akun Aplikasi', sub:'Login credentials dan hak akses sistem Classio' },
+};
+
+function goToStep(n) {
+    if (n < 1 || n > TOTAL_STEPS) return;
+    document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.step-btn').forEach(b => {
+        b.classList.remove('active');
+        if (parseInt(b.id.split('-')[1]) < n) b.classList.add('done');
+        else b.classList.remove('done');
+    });
+    currentStep = n;
+    document.getElementById('panel-' + n).classList.add('active');
+    document.getElementById('sb-' + n).classList.add('active');
+    document.getElementById('sb-' + n).classList.remove('done');
+    document.getElementById('panel-title').textContent = STEP_INFO[n].title;
+    document.getElementById('panel-sub').textContent   = STEP_INFO[n].sub;
+    document.getElementById('step-ind').textContent    = `Langkah ${n} dari ${TOTAL_STEPS}`;
+    document.getElementById('btn-prev').disabled = n === 1;
+    const btnNext = document.getElementById('btn-next');
+    if (n === TOTAL_STEPS) {
+        btnNext.textContent = '✓ Masukkan Data';
+        btnNext.className   = 'btn-submit';
+        btnNext.onclick     = submitData;
+        updateSummary();
+    } else {
+        btnNext.textContent = 'Lanjut →';
+        btnNext.className   = 'btn-next';
+        btnNext.onclick     = nextStep;
+    }
+    const pct = Math.round(((n-1)/TOTAL_STEPS)*100);
+    document.getElementById('prog-fill').style.width = pct + '%';
+    document.getElementById('prog-pct').textContent  = pct + '%';
+}
+
+function nextStep() { goToStep(currentStep + 1); }
+function prevStep() { goToStep(currentStep - 1); }
+
+// ══════════════════════════════════════════════════════
+// MULTI-SELECT
+// ══════════════════════════════════════════════════════
+const MAPEL_LIST = [
+    'Pendidikan Agama Islam (PAI)','Pendidikan Agama Kristen','Pendidikan Agama Katolik',
+    'Pendidikan Agama Hindu','Pendidikan Agama Buddha','Pendidikan Agama Konghucu',
+    'Pendidikan Pancasila (PP)','PKn / PPKn','Bahasa Indonesia','Bahasa Inggris',
+    'Bahasa Daerah','Bahasa Asing (Jepang/Jerman/Arab/Perancis)','Matematika Umum',
+    'Matematika Peminatan','IPA (Terpadu)','IPS (Terpadu)','Fisika','Kimia','Biologi',
+    'Sejarah Indonesia','Sejarah Peminatan','Geografi','Ekonomi','Sosiologi',
+    'Seni Budaya','Seni Rupa','Seni Musik','Seni Tari','PJOK','Prakarya','Informatika',
+    'Bimbingan Konseling (BK)','Teknik & Vokasi (SMK)','Akuntansi',
+    'Administrasi Perkantoran','Pemasaran','Teknik Komputer & Jaringan',
+    'Multimedia','Rekayasa Perangkat Lunak',
+];
+const KELAS_LIST = ['Kelas 1','Kelas 2','Kelas 3','Kelas 4','Kelas 5','Kelas 6',
+    'Kelas 7','Kelas 8','Kelas 9','Kelas 10','Kelas 11','Kelas 12'];
+
+let selectedMapel = [];
+let selectedKelas = [];
+
+function buildMultiOpts(listId, optsId, pillsId, selected, arr) {
+    const el = document.getElementById(optsId);
+    if (el) el.innerHTML = arr.map(item =>
+        `<div class="multi-option ${selected.includes(item)?'selected':''}"
+         onclick="toggleItem('${listId}','${item.replace(/'/g,"\\'")}')">
+         ${selected.includes(item)?'✓ ':''}${item}</div>`
+    ).join('');
+    const pills = document.getElementById(pillsId);
+    if (pills) pills.innerHTML = selected.length === 0
+        ? '<span style="font-size:0.72rem;color:rgba(255,255,255,0.15);align-self:center;">Pilih satu atau lebih...</span>'
+        : selected.map(i => `<span class="pill">${i}<span class="remove" onclick="removeItem('${listId}','${i.replace(/'/g,"\\'")}',event)">×</span></span>`).join('');
+}
+
+function toggleDropdown(id) {
+    const dd = document.getElementById(id);
+    const isOpen = dd.style.display === 'block';
+    document.querySelectorAll('.multi-dropdown').forEach(d => d.style.display='none');
+    if (!isOpen) dd.style.display = 'block';
+}
+function toggleItem(listId, item) {
+    const arr = listId==='mapel' ? selectedMapel : selectedKelas;
+    const i   = arr.indexOf(item);
+    if (i > -1) arr.splice(i,1); else arr.push(item);
+    if (listId==='mapel') buildMultiOpts('mapel','mapel-opts','mapel-pills',selectedMapel,MAPEL_LIST);
+    else buildMultiOpts('kelas','kelas-opts','kelas-pills',selectedKelas,KELAS_LIST);
+}
+function removeItem(listId, item, e) {
+    e.stopPropagation();
+    toggleItem(listId, item);
+}
+document.addEventListener('click', e => {
+    if (!e.target.closest('.multi-select'))
+        document.querySelectorAll('.multi-dropdown').forEach(d => d.style.display='none');
+});
+
+function checkOther() {
+    const val = document.getElementById('tugas_tambahan').value;
+    document.getElementById('tugas-other-wrap').className = 'other-wrap' + (val==='Lain-lain'?' show':'');
+}
+
+// ══════════════════════════════════════════════════════
+// SUMMARY (Step 5)
+// ══════════════════════════════════════════════════════
+function updateSummary() {
+    const get = id => document.getElementById(id)?.value || '—';
+    const tugas = get('tugas_tambahan')==='Lain-lain' ? (get('tugas_lainnya')||'—') : (get('tugas_tambahan')||'—');
+    const sc = document.getElementById('summary-content');
+    if (sc) sc.innerHTML = `
+        <b style="color:rgba(255,255,255,0.7);">Nama:</b> ${get('nama_lengkap')} ${get('gelar_belakang')} &nbsp;|&nbsp;
+        <b style="color:rgba(255,255,255,0.7);">NIK:</b> ${get('nik')}<br>
+        <b style="color:rgba(255,255,255,0.7);">Status:</b> ${get('status_kepegawaian')} · ${get('jabatan')}<br>
+        <b style="color:rgba(255,255,255,0.7);">Mapel:</b> ${selectedMapel.join(', ')||'—'}<br>
+        <b style="color:rgba(255,255,255,0.7);">Kelas:</b> ${selectedKelas.join(', ')||'—'} · ${get('jam_mengajar')} JP/minggu<br>
+        <b style="color:rgba(255,255,255,0.7);">Pendidikan:</b> ${get('pendidikan_terakhir')} — ${get('universitas')}<br>
+        <b style="color:rgba(255,255,255,0.7);">Role:</b> ${get('role')}`;
+}
+
+// ══════════════════════════════════════════════════════
+// SUBMIT → Supabase
+// ══════════════════════════════════════════════════════
+async function submitData() {
+    const btn = document.getElementById('btn-next');
+    btn.textContent = '⏳ Menyimpan...';
+    btn.disabled = true;
+
+    // Demo user — simpan ke localStorage saja
+const isDemo = _userId === 'demo-user' || !_userId;
+if (isDemo) {
+    showSuccess(document.getElementById('nama_lengkap')?.value || 'Demo');
+    return;
+}
+
+// Real user — cek session Supabase
+ const { data: { session } } = await sb.auth.getSession();
+if (!session) {
+    alert('Sesi habis. Silakan login kembali.');
+    window.location.href = 'index.html';
+    return;
+}
+
+    const get = id => document.getElementById(id)?.value?.trim() || null;
+    if (!get('nama_lengkap') || !get('nik') || !get('email')) {
+        alert('Nama Lengkap, NIK, dan Email wajib diisi.');
+        btn.textContent = '✓ Masukkan Data'; btn.disabled = false; return;
+    }
+    const tugas = get('tugas_tambahan')==='Lain-lain' ? (get('tugas_lainnya')||'') : (get('tugas_tambahan')||'');
+
+    const payload = {
+        id: session.user.id, email: session.user.email,
+        nama_lengkap: get('nama_lengkap'), gelar_depan: get('gelar_depan'),
+        gelar_belakang: get('gelar_belakang'), jenis_kelamin: get('jenis_kelamin'),
+        nik: get('nik'), agama: get('agama'), tempat_lahir: get('tempat_lahir'),
+        tanggal_lahir: get('tanggal_lahir')||null, no_hp: get('no_hp'),
+        alamat_jalan: get('alamat_jalan'), kelurahan: get('kelurahan'),
+        rt_rw: get('rt_rw'), kecamatan: get('kecamatan'), kota: get('kota'),
+        provinsi: get('provinsi'), kode_pos: get('kode_pos'),
+        nuptk: get('nuptk'), nip: get('nip'),
+        status_kepegawaian: get('status_kepegawaian'), jabatan: get('jabatan'),
+        tmt: get('tmt')||null, status_sertifikasi: get('status_sertifikasi'),
+        no_sertifikat: get('no_sertifikat'), pendidikan_terakhir: get('pendidikan_terakhir'),
+        tahun_lulus: get('tahun_lulus') ? parseInt(get('tahun_lulus')) : null,
+        prodi: get('prodi'), universitas: get('universitas'),
+        mata_pelajaran: selectedMapel, kelas_diajar: selectedKelas,
+        jam_mengajar: get('jam_mengajar') ? parseInt(get('jam_mengajar')) : null,
+        tugas_tambahan: tugas,
+        username_email: get('username_email') || session.user.email,
+        role: get('role') || 'Guru Reguler',
+        status_akun: 'Aktif', biodata_complete: true,
+    };
+
+    const { error } = await sb.from('teachers').upsert(payload, { onConflict:'id' });
+
+    if (error) {
+        console.error(error);
+        alert('Gagal menyimpan: ' + error.message);
+        btn.textContent = '✓ Masukkan Data'; btn.disabled = false;
+        return;
+    }
+
+    showSuccess(payload.nama_lengkap);
+}
+
+function showSuccess(nama) {
+    // Save to localStorage for dashboard display
+    const gelar = document.getElementById('gelar_belakang')?.value || '';
+    const fullName = (nama + (gelar ? ', ' + gelar : '')).trim();
+    const initials = nama.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+    localStorage.setItem('classio_teacher_name',     fullName);
+    localStorage.setItem('classio_teacher_initials', initials);
+    localStorage.setItem('classio_teacher_role',     document.getElementById('role')?.value || 'Guru');
+    localStorage.setItem('classio_teacher_jabatan',  document.getElementById('jabatan')?.value || '');
+    localStorage.setItem('classio_teacher_status',   document.getElementById('status_kepegawaian')?.value || '');
+    localStorage.setItem('classio_teacher_mapel',    selectedMapel.join(', '));
+    localStorage.setItem('classio_biodata_complete', 'true');
+
+    document.getElementById('status-badge').classList.add('show');
+    document.getElementById('prog-fill').style.width = '100%';
+    document.getElementById('prog-pct').textContent  = '100%';
+    document.querySelectorAll('.step-btn').forEach(b => { b.classList.add('done'); b.classList.remove('active'); });
+    document.getElementById('panel-title').textContent = '✅ Data Berhasil Disimpan!';
+    document.getElementById('panel-sub').textContent   = `Biodata ${nama||'Anda'} telah tersimpan. Dashboard siap diakses.`;
+    const btn = document.getElementById('btn-next');
+    btn.textContent = '→ Lanjut ke Dashboard';
+    btn.style.background = 'linear-gradient(135deg,#10B981,#059669)';
+    btn.style.boxShadow  = '0 4px 14px rgba(16,185,129,0.4)';
+    btn.disabled  = false;
+    btn.className = 'btn-submit';
+    btn.onclick   = () => window.location.href = 'dashboard.html';
+}
+
+// ── INIT ──────────────────────────────────────────────
+buildMultiOpts('mapel','mapel-opts','mapel-pills',selectedMapel,MAPEL_LIST);
+buildMultiOpts('kelas','kelas-opts','kelas-pills',selectedKelas,KELAS_LIST);
+goToStep(1);
+</script>
+
+</body>
+</html>

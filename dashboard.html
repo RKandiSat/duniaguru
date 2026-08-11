@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classio — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Bricolage+Grotesque:wght@700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234F46E5'/><text y='22' x='8' font-size='18' font-family='serif' font-weight='bold' fill='white'>C</text></svg>">
+<style>
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden; }
+
+/* ── LAYOUT ── */
+body { display: flex; height: 100vh; background: #F8F7FF; }
+
+/* ════════════════════════════════
+   SIDEBAR
+════════════════════════════════ */
+.sidebar {
+    width: 228px;
+    flex-shrink: 0;
+    background: #0F172A;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Aurora glow */
+.sidebar::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: -80px;
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(99,102,241,0.22) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+}
+.sidebar::after {
+    content: '';
+    position: absolute;
+    bottom: 80px; right: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(124,58,237,0.16) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+}
+
+/* Brand */
+.sb-brand {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 20px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    position: relative; z-index: 1;
+}
+.sb-logo {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, #4F46E5, #7C3AED);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800; font-size: 1.1rem; color: white;
+    flex-shrink: 0;
+}
+.sb-brand-name {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800; font-size: 0.95rem; color: white; letter-spacing: -0.3px;
+}
+.sb-brand-ver {
+    font-size: 0.6rem; color: rgba(255,255,255,0.28); margin-top: 1px;
+}
+
+/* Nav — scrollable middle */
+.sb-nav {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 14px 10px;
+    position: relative; z-index: 1;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(99,102,241,0.2) transparent;
+}
+.sb-nav-label {
+    font-size: 0.57rem; font-weight: 700;
+    color: rgba(255,255,255,0.2);
+    text-transform: uppercase; letter-spacing: 1px;
+    padding: 0 8px; margin-bottom: 8px;
+}
+.nav-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 10px;
+    border-radius: 9px;
+    border: none; background: none;
+    width: 100%; text-align: left;
+    cursor: pointer;
+    transition: all 0.18s;
+    margin-bottom: 2px;
+    text-decoration: none;
+}
+.nav-link:hover {
+    background: rgba(255,255,255,0.06);
+}
+.nav-link.active {
+    background: rgba(79,70,229,0.2);
+    border: 1px solid rgba(79,70,229,0.25);
+}
+.nav-icon {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; flex-shrink: 0;
+    background: rgba(255,255,255,0.06);
+    transition: all 0.18s;
+}
+.nav-link.active .nav-icon {
+    background: rgba(79,70,229,0.3);
+}
+.nav-text {
+    font-size: 0.78rem; font-weight: 600;
+    color: rgba(255,255,255,0.5);
+    transition: color 0.18s;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.nav-link:hover .nav-text { color: rgba(255,255,255,0.8); }
+.nav-link.active .nav-text { color: white; }
+
+/* Footer — always visible */
+.sb-footer {
+    flex-shrink: 0;
+    padding: 12px 10px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    position: relative; z-index: 1;
+}
+.sb-footer-brand {
+    text-align: center;
+    font-size: 0.6rem; color: rgba(255,255,255,0.18);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+.btn-logout {
+    width: 100%;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 9px;
+    border-radius: 9px;
+    border: 1px solid rgba(244,63,94,0.2);
+    background: rgba(244,63,94,0.07);
+    color: rgba(252,165,165,0.8);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.75rem; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-logout:hover {
+    background: rgba(244,63,94,0.15);
+    border-color: rgba(244,63,94,0.35);
+    color: #fca5a5;
+}
+
+/* ════════════════════════════════
+   MAIN AREA
+════════════════════════════════ */
+.main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    background: #F8F7FF;
+}
+
+/* TOPBAR */
+.topbar {
+    flex-shrink: 0;
+    height: 62px;
+    background: white;
+    border-bottom: 1px solid #E5E3F0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 28px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    position: sticky; top: 0; z-index: 10;
+}
+.topbar-left {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.78rem;
+}
+.bc-root { color: #94a3b8; font-weight: 500; }
+.bc-sep  { color: #cbd5e1; }
+.bc-curr { color: #4F46E5; font-weight: 700; }
+
+.topbar-right {
+    display: flex; align-items: center; gap: 14px;
+}
+.notif-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%; border: 1px solid #E5E3F0;
+    background: white; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; position: relative;
+    transition: all 0.2s;
+}
+.notif-btn:hover { background: #F8F7FF; border-color: #C7D2FE; }
+.notif-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #EF4444; border: 2px solid white;
+    position: absolute; top: 6px; right: 6px;
+}
+.topbar-divider { width: 1px; height: 24px; background: #E5E3F0; }
+
+/* User info */
+.user-wrap {
+    display: flex; align-items: center; gap: 10px; cursor: pointer;
+}
+.user-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4F46E5, #7C3AED);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 800;
+    flex-shrink: 0;
+}
+.user-info { display: flex; flex-direction: column; align-items: flex-start; }
+.user-name-row {
+    display: flex; align-items: center; gap: 7px;
+}
+.user-name {
+    font-size: 0.8rem; font-weight: 700; color: #0F172A;
+    white-space: nowrap;
+}
+.aktif-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.25);
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-size: 0.58rem; font-weight: 700; color: #10B981;
+    white-space: nowrap;
+}
+.aktif-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: #10B981;
+    animation: blink 2s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+.user-role {
+    font-size: 0.68rem; color: #94a3b8; font-weight: 500;
+    white-space: nowrap;
+}
+.user-chevron { font-size: 0.6rem; color: #94a3b8; }
+
+/* ════════════════════════════════
+   CONTENT AREA
+════════════════════════════════ */
+.content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 28px;
+}
+
+/* All views hidden by default */
+[id^="view-"] { display: none; }
+#view-main    { display: block; }
+
+/* ── Info header card ── */
+.info-card {
+    background: white;
+    border: 1px solid #E5E3F0;
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.info-card-top {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px; margin-bottom: 16px;
+}
+.info-card-icon {
+    width: 40px; height: 40px;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #EEF2FF, #C7D2FE);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+}
+.info-card-title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 1rem; font-weight: 800; color: #0F172A;
+}
+.info-card-sub { font-size: 0.72rem; color: #94a3b8; margin-top: 2px; }
+.year-badge {
+    background: #EEF2FF; border: 1px solid #C7D2FE;
+    border-radius: 20px; padding: 4px 14px;
+    font-size: 0.72rem; font-weight: 700; color: #4F46E5;
+}
+.divider { height: 1px; background: #F1F5F9; margin-bottom: 14px; }
+.meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
+    gap: 10px; margin-bottom: 14px;
+}
+.meta-cell {
+    background: #F8F7FF; border-radius: 10px;
+    padding: 10px 12px;
+    border: 1px solid #E5E3F0;
+}
+.meta-label { font-size: 0.6rem; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px; }
+.meta-value { font-size: 0.8rem; font-weight: 700; color: #0F172A; }
+.progress-label { font-size: 0.72rem; font-weight: 600; color: #64748B; }
+.progress-value { font-size: 0.72rem; font-weight: 700; color: #4F46E5; }
+.progress-track {
+    height: 6px; background: #E5E3F0; border-radius: 99px;
+    overflow: hidden; margin-top: 6px;
+}
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4F46E5, #7C3AED);
+    border-radius: 99px;
+}
+
+/* ── MODULE BUTTONS GRID ── */
+.module-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+}
+.module-btn {
+    background: white;
+    border: 1.5px solid #E5E3F0;
+    border-radius: 16px;
+    padding: 18px 20px;
+    display: flex; align-items: center; gap: 14px;
+    cursor: pointer;
+    transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.module-btn:hover {
+    border-color: #818CF8;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(79,70,229,0.12);
+}
+.module-btn:hover .module-arrow { transform: translateX(4px); color: #4F46E5; }
+.module-icon {
+    width: 46px; height: 46px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.35rem; flex-shrink: 0;
+}
+.module-body { flex: 1; }
+.module-title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800; font-size: 0.88rem; color: #0F172A;
+    letter-spacing: -0.2px; margin-bottom: 3px;
+}
+.module-sub { font-size: 0.71rem; color: #94a3b8; line-height: 1.4; }
+.module-arrow {
+    font-size: 0.95rem; color: #CBD5E1;
+    transition: all 0.2s; flex-shrink: 0;
+}
+
+/* ── VIEW HEADER ── */
+.view-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 22px; flex-wrap: wrap;
+}
+.btn-back {
+    padding: 7px 15px;
+    border-radius: 9px;
+    border: 1.5px solid #E5E3F0;
+    background: white;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.78rem; font-weight: 600; color: #374151;
+    cursor: pointer; transition: all 0.2s;
+    flex-shrink: 0;
+}
+.btn-back:hover { border-color: #818CF8; color: #4F46E5; background: #EEF2FF; }
+.view-title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 1rem; font-weight: 800; color: #0F172A;
+}
+.view-sub { font-size: 0.7rem; color: #94a3b8; margin-top: 2px; }
+
+/* ── COMING SOON ── */
+.coming-soon {
+    background: white;
+    border: 1.5px dashed #E5E3F0;
+    border-radius: 18px;
+    padding: 56px 40px;
+    text-align: center;
+}
+.cs-icon { font-size: 2.8rem; margin-bottom: 14px; }
+.cs-title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 1.05rem; font-weight: 800; color: #0F172A;
+    margin-bottom: 8px;
+}
+.cs-sub {
+    font-size: 0.8rem; color: #94a3b8; line-height: 1.7;
+    max-width: 320px; margin: 0 auto;
+}
+.cs-badge {
+    display: inline-block;
+    background: #EEF2FF; border: 1px solid #C7D2FE;
+    color: #4F46E5; font-size: 0.7rem; font-weight: 700;
+    padding: 4px 14px; border-radius: 20px;
+    margin-top: 16px;
+}
+</style>
+    </head>
+<body>
+
+<!-- ════════ SIDEBAR ════════ -->
+<aside class="sidebar">
+
+    <!-- Brand -->
+    <div class="sb-brand">
+        <div class="sb-logo">C</div>
+        <div>
+            <div class="sb-brand-name">Classio</div>
+            <div class="sb-brand-ver">Learning Management System App v15e</div>
+        </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="sb-nav">
+        <div class="sb-nav-label">Menu Utama</div>
+
+        <button class="nav-link active" onclick="showView('main')">
+            <div class="nav-icon">🏠</div>
+            <span class="nav-text">Dashboard</span>
+        </button>
+        <button class="nav-link" onclick="showView('cptp')">
+            <div class="nav-icon">📘</div>
+            <span class="nav-text">CP & TP</span>
+        </button>
+        <button class="nav-link" onclick="showView('kktp')">
+            <div class="nav-icon">✅</div>
+            <span class="nav-text">KKTP</span>
+        </button>
+        <button class="nav-link" onclick="showView('modul')">
+            <div class="nav-icon">📖</div>
+            <span class="nav-text">Modul Ajar & RPP</span>
+        </button>
+        <button class="nav-link" onclick="showView('prosem')">
+            <div class="nav-icon">📅</div>
+            <span class="nav-text">Prosem</span>
+        </button>
+        <button class="nav-link" onclick="showView('prota')">
+            <div class="nav-icon">🗂️</div>
+            <span class="nav-text">Prota</span>
+        </button>
+        <button class="nav-link" onclick="showView('bahan')">
+            <div class="nav-icon">📚</div>
+            <span class="nav-text">Bahan Ajar</span>
+        </button>
+        <button class="nav-link" onclick="showView('akm')">
+            <div class="nav-icon">📝</div>
+            <span class="nav-text">Soal AKM</span>
+        </button>
+        <button class="nav-link" onclick="showView('asesmen')">
+            <div class="nav-icon">📊</div>
+            <span class="nav-text">Soal Asesmen AKM</span>
+        </button>
+        <div style="height:1px;background:rgba(255,255,255,0.06);margin:10px;"></div>
+        <button onclick="goToEditProfil()" style="display:flex;align-items:center;gap:10px;
+            padding:9px 10px;border-radius:9px;border:1px solid rgba(79,70,229,0.2);
+            background:rgba(79,70,229,0.08);width:100%;cursor:pointer;transition:all 0.18s;
+            margin:0 10px 0;width:calc(100% - 20px);"
+            onmouseover="this.style.background='rgba(79,70,229,0.15)'"
+            onmouseout="this.style.background='rgba(79,70,229,0.08)'">
+            <div style="width:30px;height:30px;border-radius:8px;background:rgba(79,70,229,0.2);
+                display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;">👤</div>
+            <span style="font-size:0.78rem;font-weight:600;color:rgba(165,180,252,0.9);">Edit Data Pribadi</span>
+        </button>
+    </nav>
+
+    <!-- Footer — always visible -->
+    <div class="sb-footer">
+        <div class="sb-footer-brand">Classio Teaching App</div>
+        <button class="btn-logout" onclick="doLogout()">
+            🚪 &nbsp;Keluar
+        </button>
+    </div>
+
+</aside>
+
+<!-- ════════ MAIN AREA ════════ -->
+<div class="main-area">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <span class="bc-root">Dashboard</span>
+            <span class="bc-sep">/</span>
+            <span class="bc-curr" id="breadcrumb">Beranda</span>
+        </div>
+        <div class="topbar-right">
+            <button class="notif-btn">
+                🔔<span class="notif-dot"></span>
+            </button>
+            <div class="topbar-divider"></div>
+            <div class="user-wrap">
+                <div class="user-avatar" id="user-avatar">KH</div>
+                <div class="user-info">
+                    <div class="user-name-row">
+                        <span class="user-name" id="user-name">Kus Hendratmo</span>
+                        <span class="aktif-badge" id="aktif-badge" style="display:none;">
+                            <span class="aktif-dot"></span>Aktif
+                        </span>
+                    </div>
+                    <span class="user-role" id="user-role">Guru Bahasa Inggris</span>
+                </div>
+                <span class="user-chevron">▾</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- ══ VIEW: DASHBOARD UTAMA ══ -->
+        <div id="view-main">
+
+            <!-- Info card -->
+            <div class="info-card">
+                <div class="info-card-top">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <div class="info-card-icon">📚</div>
+                        <div>
+                            <div class="info-card-title">Manajemen Pembelajaran</div>
+                            <div class="info-card-sub">Pilih modul yang ingin dikerjakan hari ini.</div>
+                        </div>
+                    </div>
+                    <div class="year-badge">Tahun Ajaran 2026/2027</div>
+                </div>
+                <div class="divider"></div>
+                <div class="meta-grid">
+                    <div class="meta-cell">
+                        <div class="meta-label">Guru Pengampu</div>
+                        <div class="meta-value" id="meta-nama">—</div>
+                    </div>
+                    <div class="meta-cell">
+                        <div class="meta-label">Jabatan</div>
+                        <div class="meta-value" id="meta-jabatan">—</div>
+                    </div>
+                    <div class="meta-cell">
+                        <div class="meta-label">Mata Pelajaran</div>
+                        <div class="meta-value" id="meta-mapel">—</div>
+                    </div>
+                    <div class="meta-cell">
+                        <div class="meta-label">Status</div>
+                        <div class="meta-value" id="meta-status">—</div>
+                    </div>
+                    <div class="meta-cell">
+                        <div class="meta-label">Role</div>
+                        <div class="meta-value" id="meta-role">—</div>
+                    </div>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                    <span class="progress-label">Modul Selesai</span>
+                    <span class="progress-value">0 / 8</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" style="width:0%;"></div>
+                </div>
+            </div>
+
+            <!-- 8 Module Buttons -->
+            <div class="module-grid">
+
+                <div class="module-btn" onclick="showView('cptp')">
+                    <div class="module-icon" style="background:linear-gradient(135deg,#EEF2FF,#C7D2FE);">📘</div>
+                    <div class="module-body">
+                        <div class="module-title">CP & TP</div>
+                        <div class="module-sub">Capaian Pembelajaran & Tujuan Pembelajaran</div>
+                    </div>
+                    <div class="module-arrow">→</div>
+                </div>
+
+                <div class="module-btn" onclick="showView('kktp')">
+                    <div class="module-icon" style="background:linear-gradient(135deg,#F0FDF4,#A7F3D0);">✅</div>
+                    <div class="module-body">
+                        <div class="module-title">KKTP</div>
+                        <div class="module-sub">Kriteria Ketercapaian Tujuan Pembelajaran</div>
+                    </div>
+                    <div class="module-arrow">→</div>
+                </div>
+
+                <div class="module-btn" onclick="showView('modul')">
+                    <div class="module-icon" style="background:linear-gradient(135deg,#FFF7ED,#FED7AA);">📖</div>
+                    <div class="module-body">
+                        <div class="module-title">Modul Ajar & RPP</div>
+                        <div class="module-sub">Rencana Pelaksanaan Pembelajaran</div>
+                    </div>
+                    <div class="module-arrow">→</div>
+                </div>
+
+                <div class="module-btn" onclick="showView('prosem')">
+                    <div class="module-icon" style="background:linear-gradient(135deg,#F0F9FF,#BAE6FD);">📅</div>
+                    <div class="module-body">
+                        <div class="module-title">Prosem</div>
+                        <div class="module-sub">Program Semester</div>
+                    </div>
+                    <div class="module-arrow">→</div>
+                </div>
+
+                <div class="module-btn" onclick="showView('prota')">
+                    <div class="module-icon" style="background:linear-gradient(135deg,#FDF4FF,#E9D5FF);">🗂️</div>
+                    <div class="module-body">
+                        <div class="module-title">Prota</div>
+                        <div class="module-sub">Program Tahunan</div>
+                    </div>
+                    <div class="module-arrow">→</div>
+                </div>
+
+                <div class="module-btn" onclick="showView('bahan')">
+                    <div class="module-icon" style="background:linear-gradient(135deg,#FFF1F2,#FECDD3);">📚</div>
+                    <div class="module-body">
+                        <div class="module-title">Bahan Ajar</div>
+                        <div class="module-sub">Materi pembelajaran terstruktur</div>
+                    </div>
+                    <div class="module-arrow">→</div>
+                </div>
+
+                <div class="module-btn" onclick="showView('akm')">
+                    <div class="module-icon" style="background:linear-gradient(135deg,#FFFBEB,#FDE68A);">📝</div>
+                    <div class="module-body">
+                        <div class="module-title">Soal AKM</div>
+                        <div class="module-sub">Asesmen Kompetensi Minimum</div>
+                    </div>
+                    <div class="module-arrow">→</div>
+                </div>
+
+                <div class="module-btn" onclick="showView('asesmen')">
+                    <div class="module-icon" style="background:linear-gradient(135deg,#ECFDF5,#6EE7B7);">📊</div>
+                    <div class="module-body">
+                        <div class="module-title">Soal Asesmen Berbasis AKM</div>
+                        <div class="module-sub">Instrumen penilaian berbasis AKM</div>
+                    </div>
+                    <div class="module-arrow">→</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ══ VIEW: CP & TP ══ -->
+        <div id="view-cptp">
+            <div class="view-header">
+                <button class="btn-back" onclick="showView('main')">← Kembali</button>
+                <div>
+                    <div class="view-title">📘 CP & TP</div>
+                    <div class="view-sub">Capaian Pembelajaran & Tujuan Pembelajaran</div>
+                </div>
+            </div>
+            <div class="coming-soon">
+                <div class="cs-icon">📘</div>
+                <div class="cs-title">CP & TP</div>
+                <div class="cs-sub">Konten modul ini akan segera tersedia.<br>Silakan kembali ke dashboard untuk melanjutkan.</div>
+                <div class="cs-badge">Segera Hadir</div>
+            </div>
+        </div>
+
+        <!-- ══ VIEW: KKTP ══ -->
+        <div id="view-kktp">
+            <div class="view-header">
+                <button class="btn-back" onclick="showView('main')">← Kembali</button>
+                <div>
+                    <div class="view-title">✅ KKTP</div>
+                    <div class="view-sub">Kriteria Ketercapaian Tujuan Pembelajaran</div>
+                </div>
+            </div>
+            <div class="coming-soon">
+                <div class="cs-icon">✅</div>
+                <div class="cs-title">KKTP</div>
+                <div class="cs-sub">Konten modul ini akan segera tersedia.<br>Silakan kembali ke dashboard untuk melanjutkan.</div>
+                <div class="cs-badge">Segera Hadir</div>
+            </div>
+        </div>
+
+        <!-- ══ VIEW: MODUL AJAR ══ -->
+        <div id="view-modul">
+            <div class="view-header">
+                <button class="btn-back" onclick="showView('main')">← Kembali</button>
+                <div>
+                    <div class="view-title">📖 Modul Ajar & RPP</div>
+                    <div class="view-sub">Rencana Pelaksanaan Pembelajaran</div>
+                </div>
+            </div>
+            <div class="coming-soon">
+                <div class="cs-icon">📖</div>
+                <div class="cs-title">Modul Ajar & RPP</div>
+                <div class="cs-sub">Konten modul ini akan segera tersedia.<br>Silakan kembali ke dashboard untuk melanjutkan.</div>
+                <div class="cs-badge">Segera Hadir</div>
+            </div>
+        </div>
+
+        <!-- ══ VIEW: PROSEM ══ -->
+        <div id="view-prosem">
+            <div class="view-header">
+                <button class="btn-back" onclick="showView('main')">← Kembali</button>
+                <div><div class="view-title">📅 Prosem</div><div class="view-sub">Program Semester</div></div>
+            </div>
+            <div class="coming-soon">
+                <div class="cs-icon">📅</div><div class="cs-title">Prosem</div>
+                <div class="cs-sub">Konten modul ini akan segera tersedia.</div>
+                <div class="cs-badge">Segera Hadir</div>
+            </div>
+        </div>
+
+        <!-- ══ VIEW: PROTA ══ -->
+        <div id="view-prota">
+            <div class="view-header">
+                <button class="btn-back" onclick="showView('main')">← Kembali</button>
+                <div><div class="view-title">🗂️ Prota</div><div class="view-sub">Program Tahunan</div></div>
+            </div>
+            <div class="coming-soon">
+                <div class="cs-icon">🗂️</div><div class="cs-title">Prota</div>
+                <div class="cs-sub">Konten modul ini akan segera tersedia.</div>
+                <div class="cs-badge">Segera Hadir</div>
+            </div>
+        </div>
+
+        <!-- ══ VIEW: BAHAN AJAR ══ -->
+        <div id="view-bahan">
+            <div class="view-header">
+                <button class="btn-back" onclick="showView('main')">← Kembali</button>
+                <div><div class="view-title">📚 Bahan Ajar</div><div class="view-sub">Materi pembelajaran terstruktur</div></div>
+            </div>
+            <div class="coming-soon">
+                <div class="cs-icon">📚</div><div class="cs-title">Bahan Ajar</div>
+                <div class="cs-sub">Konten modul ini akan segera tersedia.</div>
+                <div class="cs-badge">Segera Hadir</div>
+            </div>
+        </div>
+
+        <!-- ══ VIEW: SOAL AKM ══ -->
+        <div id="view-akm">
+            <div class="view-header">
+                <button class="btn-back" onclick="showView('main')">← Kembali</button>
+                <div><div class="view-title">📝 Rancangan Soal AKM</div><div class="view-sub">Asesmen Kompetensi Minimum</div></div>
+            </div>
+            <div class="coming-soon">
+                <div class="cs-icon">📝</div><div class="cs-title">Rancangan Soal AKM</div>
+                <div class="cs-sub">Konten modul ini akan segera tersedia.</div>
+                <div class="cs-badge">Segera Hadir</div>
+            </div>
+        </div>
+
+        <!-- ══ VIEW: SOAL ASESMEN AKM ══ -->
+        <div id="view-asesmen">
+            <div class="view-header">
+                <button class="btn-back" onclick="showView('main')">← Kembali</button>
+                <div><div class="view-title">📊 Soal Asesmen Berbasis AKM</div><div class="view-sub">Instrumen penilaian berbasis AKM</div></div>
+            </div>
+            <div class="coming-soon">
+                <div class="cs-icon">📊</div><div class="cs-title">Soal Asesmen Berbasis AKM</div>
+                <div class="cs-sub">Konten modul ini akan segera tersedia.</div>
+                <div class="cs-badge">Segera Hadir</div>
+            </div>
+        </div>
+
+        <!-- Popup: Biodata belum lengkap -->
+<div id="popup-biodata" style="display:none;position:fixed;inset:0;z-index:1000;
+    background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);
+    align-items:center;justify-content:center;">
+    <div style="background:white;border-radius:20px;padding:36px 40px;
+        max-width:400px;width:90%;text-align:center;
+        box-shadow:0 24px 64px rgba(0,0,0,0.2);
+        animation:popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);">
+        <div style="font-size:2.5rem;margin-bottom:14px;">📋</div>
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.1rem;
+            font-weight:800;color:#0F172A;margin-bottom:10px;">
+            Isi Data Pribadi Dulu
+        </div>
+        <div style="font-size:0.82rem;color:#64748B;line-height:1.7;margin-bottom:22px;">
+            Lengkapi data pribadi kamu terlebih dahulu sebelum menggunakan modul pembelajaran.
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;">
+            <button onclick="document.getElementById('popup-biodata').style.display='none'"
+                style="padding:10px 20px;border-radius:10px;border:1.5px solid #E5E3F0;
+                background:none;color:#374151;font-family:'Plus Jakarta Sans',sans-serif;
+                font-size:0.82rem;font-weight:600;cursor:pointer;">
+                Nanti
+            </button>
+            <button onclick="window.location.href='biodata.html'"
+                style="padding:10px 24px;border-radius:10px;border:none;
+                background:linear-gradient(135deg,#4F46E5,#7C3AED);color:white;
+                font-family:'Plus Jakarta Sans',sans-serif;font-size:0.82rem;
+                font-weight:700;cursor:pointer;
+                box-shadow:0 4px 14px rgba(79,70,229,0.4);">
+                Isi Sekarang →
+            </button>
+        </div>
+    </div>
+</div>
+<style>
+@keyframes popIn {
+    0%   { transform:scale(0.8); opacity:0; }
+    100% { transform:scale(1);   opacity:1; }
+}
+
+/* Module buttons locked state */
+.module-btn.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(30%);
+}
+.module-btn.locked:hover {
+    transform: none !important;
+    border-color: #E5E3F0 !important;
+    box-shadow: none !important;
+}
+
+</style>
+
+    </div><!-- /content -->
+</div><!-- /main-area -->
+
+<script>
+// ── SIMPLE AUTH: localStorage ────────────────────────
+if (localStorage.getItem('classio_logged_in') !== 'true') {
+    window.location.href = 'index.html';
+}
+
+// ── LOAD PROFILE ─────────────────────────────────────
+(function() {
+    const name    = localStorage.getItem('classio_teacher_name');
+    const role    = localStorage.getItem('classio_teacher_role');
+    const ini     = localStorage.getItem('classio_teacher_initials');
+    const mapel   = localStorage.getItem('classio_teacher_mapel');
+    const jabatan = localStorage.getItem('classio_teacher_jabatan');
+    const status  = localStorage.getItem('classio_teacher_status');
+    const bioDone = localStorage.getItem('classio_biodata_complete');
+
+    const set = (id, val) => { const e=document.getElementById(id); if(e&&val) e.textContent=val; };
+
+    if (name) {
+        set('user-name',    name);
+        set('user-role',    role || 'Guru');
+        set('user-avatar',  ini  || name.substring(0,2).toUpperCase());
+        set('meta-nama',    name);
+        set('meta-role',    role    || '—');
+        set('meta-jabatan', jabatan || '—');
+        set('meta-status',  status  || '—');
+        if (mapel) set('meta-mapel', mapel.split(',')[0]);
+    } else {
+        const email = localStorage.getItem('classio_user_email') || '';
+        set('user-name',   email);
+        set('user-avatar', email.substring(0,2).toUpperCase());
+    }
+
+    if (bioDone === 'true') {
+        const badge = document.getElementById('aktif-badge');
+        if (badge) badge.style.display = 'inline-flex';
+    }
+
+    // Kunci tombol modul jika biodata belum lengkap
+if (bioDone !== 'true') {
+    document.querySelectorAll('.module-btn').forEach(btn => {
+        btn.classList.add('locked');
+    });
+    }
+})();
+
+// ── NAVIGATION ───────────────────────────────────────
+const BREADCRUMBS = {
+    main:'Beranda', cptp:'CP & TP', kktp:'KKTP',
+    modul:'Modul Ajar & RPP', prosem:'Prosem', prota:'Prota',
+    bahan:'Bahan Ajar', akm:'Soal AKM', asesmen:'Soal Asesmen AKM'
+};
+
+const MODULE_VIEWS = ['cptp','kktp','modul','prosem','prota','bahan','akm','asesmen'];
+
+function showView(id) {
+    // Cek biodata jika bukan dashboard utama
+    const bioDone = localStorage.getItem('classio_biodata_complete');
+    if (bioDone !== 'true' && MODULE_VIEWS.includes(id)) {
+        const popup = document.getElementById('popup-biodata');
+        if (popup) popup.style.display = 'flex';
+        return;
+    }
+
+    document.querySelectorAll('[id^="view-"]').forEach(v => v.style.display = 'none');
+    const el = document.getElementById('view-' + id);
+    if (el) el.style.display = 'block';
+    document.getElementById('breadcrumb').textContent = BREADCRUMBS[id] || id;
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    document.querySelectorAll(`[onclick="showView('${id}')"]`).forEach(l => l.classList.add('active'));
+    document.querySelector('.content').scrollTo(0, 0);
+}
+
+// ── EDIT DATA ────────────────────────────────────────
+function goToEditProfil() {
+    window.location.href = 'biodata.html';
+}
+
+// ── LOGOUT ───────────────────────────────────────────
+function doLogout() {
+    if (confirm('Yakin ingin keluar dari Classio?')) {
+        localStorage.clear();
+        window.location.href = 'index.html';
+    }
+}
+</script>
+
+</body>
+</html>
