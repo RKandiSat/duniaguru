@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Classio — Masuk</title>
+    <title>DuniaGuru — Masuk</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='10' fill='%234F46E5'/><text y='23' x='7' font-size='19' font-weight='bold' fill='white'>C</text></svg>">
@@ -666,10 +666,10 @@
     <div class="left-panel">
         <!-- Brand -->
         <div class="brand">
-            <div class="brand-icon">C</div>
+            <div class="brand-icon">DG</div>
             <div>
-                <div class="brand-name">Classio</div>
-                <div class="brand-ver">Learning Management System App v15e</div>
+                <div class="brand-name"></div>
+                <div class="brand-ver">Learning Management System App v1 admin</div>
             </div>
         </div>
 
@@ -853,12 +853,12 @@
                 justify-content:center;font-size:1.6rem;">🔐</div>
 
             <div class="card-title">
-                <span class="ct-indigo">Classio</span>
+                <span class="ct-indigo">Dunia Guru</span>
                 <span class="ct-white"> Beta</span>
             </div>
 
             <div class="card-sub" id="cardSub">
-                Masukkan passcode yang telah<br>diberikan oleh admin Classio.
+                Masukkan passcode yang telah<br>diberikan oleh admin Dunia Guru.
             </div>
 
             <div class="error-box" id="errorBox"></div>
@@ -891,7 +891,7 @@
 
             <button class="btn-masuk" id="btnMasuk" onclick="doLogin()"
                 style="margin-bottom:14px;">
-                Masuk ke Classio →
+                Masuk ke Dunia Guru →
             </button>
 
             <div style="text-align:center;font-size:0.68rem;
@@ -902,7 +902,7 @@
             </div>
 
             <!-- WhatsApp Button -->
-            <a href="https://wa.me/6281234567890?text=Halo%20Admin%20Classio%2C%20saya%20ingin%20mendapatkan%20passcode%20untuk%20mengakses%20Classio%20Beta."
+            <a href="https://wa.me/6281234567890?text=Halo%20Admin%20Dunia Guru%2C%20saya%20ingin%20mendapatkan%20passcode%20untuk%20mengakses%20Dunia Guru%20Beta."
                 target="_blank"
                 style="display:flex;align-items:center;justify-content:center;
                     gap:8px;width:100%;padding:11px 16px;
@@ -926,7 +926,7 @@
                 <span class="trust-icon">🔒</span>
                 <div class="trust-text">
                     <b>Akses Terbatas</b> — Hanya guru terdaftar<br>
-                    yang dapat mengakses Classio Beta.
+                    yang dapat mengakses Dunia Guru Beta.
                 </div>
             </div>
 
@@ -945,7 +945,7 @@ try {
 } catch(e) { console.warn('Supabase:', e); }
 
 // Sudah login? Langsung ke dashboard
-if (localStorage.getItem('classio_logged_in') === 'true') {
+if (localStorage.getItem('duniaguru_logged_in') === 'true') {
     window.location.href = 'dashboard.html';
 }
 
@@ -990,11 +990,11 @@ async function doLogin() {
         if (error || !data) {
             if (btn) {
                 btn.classList.remove('loading');
-                btn.innerHTML = 'Masuk ke Classio →';
+                btn.innerHTML = 'Masuk ke duniaguru →';
                 btn.disabled  = false;
             }
             if (errEl) {
-                errEl.innerHTML = '⚠️ Passcode tidak valid. Hubungi admin Classio.';
+                errEl.innerHTML = '⚠️ Passcode tidak valid. Hubungi admin duniaguru.';
                 errEl.style.display = 'block';
             }
             if (input) {
@@ -1014,16 +1014,16 @@ async function doLogin() {
 
         // Simpan ke localStorage
         const nm = data.nama_lengkap || '';
-        localStorage.setItem('classio_logged_in',        'true');
-        localStorage.setItem('classio_user_id',          data.id);
-        localStorage.setItem('classio_passcode',         passcode);
-        localStorage.setItem('classio_teacher_name',     nm);
-        localStorage.setItem('classio_teacher_initials', nm ? nm.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase() : '');
-        localStorage.setItem('classio_teacher_role',     data.role || 'Guru');
-        localStorage.setItem('classio_teacher_jabatan',  data.jabatan || '');
-        localStorage.setItem('classio_teacher_status',   data.status_kepegawaian || '');
-        localStorage.setItem('classio_teacher_mapel',    Array.isArray(data.mata_pelajaran) ? data.mata_pelajaran.join(', ') : '');
-        localStorage.setItem('classio_biodata_complete', data.biodata_complete ? 'true' : 'false');
+        localStorage.setItem('duniaguru_logged_in',        'true');
+        localStorage.setItem('duniaguru_user_id',          data.id);
+        localStorage.setItem('duniaguru_passcode',         passcode);
+        localStorage.setItem('duniaguru_teacher_name',     nm);
+        localStorage.setItem('duniaguru_teacher_initials', nm ? nm.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase() : '');
+        localStorage.setItem('duniaguru_teacher_role',     data.role || 'Guru');
+        localStorage.setItem('duniaguru_teacher_jabatan',  data.jabatan || '');
+        localStorage.setItem('duniaguru_teacher_status',   data.status_kepegawaian || '');
+        localStorage.setItem('duniaguru_teacher_mapel',    Array.isArray(data.mata_pelajaran) ? data.mata_pelajaran.join(', ') : '');
+        localStorage.setItem('duniaguru_biodata_complete', data.biodata_complete ? 'true' : 'false');
 
         // Notifikasi sukses
         if (sucEl) {
@@ -1034,7 +1034,7 @@ async function doLogin() {
                 + '</span>';
             sucEl.style.display = 'block';
         }
-        if (sub) sub.innerHTML = 'Selamat datang di Classio! ✨';
+        if (sub) sub.innerHTML = 'Selamat datang di duniaguru! ✨';
 
         // Redirect berdasarkan status biodata
         setTimeout(() => {
@@ -1043,7 +1043,7 @@ async function doLogin() {
 
     } catch(err) {
         console.error('Login error:', err);
-        if (btn) { btn.classList.remove('loading'); btn.innerHTML = 'Masuk ke Classio →'; btn.disabled = false; }
+        if (btn) { btn.classList.remove('loading'); btn.innerHTML = 'Masuk ke duniaguru →'; btn.disabled = false; }
         if (errEl) { errEl.innerHTML = '⚠️ Koneksi gagal. Periksa internet Anda.'; errEl.style.display = 'block'; }
     }
 }
