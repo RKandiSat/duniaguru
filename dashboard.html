@@ -222,25 +222,13 @@ body { display: flex; height: 100vh; background: #F8F7FF; }
     display: flex; align-items: center; justify-content: center;
     font-size: 0.72rem; font-weight: 800;
     flex-shrink: 0;
-    cursor: pointer;
     position: relative;
     overflow: hidden;
     border: 2px solid rgba(79,70,229,0.3);
     transition: border-color 0.2s;
 }
 .user-avatar:hover {
-    border-color: rgba(79,70,229,0.8);
-}
-.user-avatar:hover::after {
-    content: "📷";
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    border-radius: 50%;
+    border-color: rgba(79,70,229,0.4);
 }
 .user-avatar img {
     width: 100%; height: 100%;
@@ -249,7 +237,7 @@ body { display: flex; height: 100vh; background: #F8F7FF; }
     position: absolute;
     inset: 0;
 }
-#photo-input { display: none; }
+
 .user-info { display: flex; flex-direction: column; align-items: flex-start; }
 .user-name-row {
     display: flex; align-items: center; gap: 7px;
@@ -529,9 +517,7 @@ body { display: flex; height: 100vh; background: #F8F7FF; }
             </button>
             <div class="topbar-divider"></div>
             <div class="user-wrap">
-                <div class="user-avatar" id="user-avatar" onclick="triggerPhotoUpload()" title="Klik untuk ganti foto profil">KH
-                    <input type="file" id="photo-input" accept="image/*" onchange="handlePhotoUpload(event)">
-                </div>
+                <div class="user-avatar" id="user-avatar">KH</div>
                 <div class="user-info">
                     <div class="user-name-row">
                         <span class="user-name" id="user-name">Kus Hendratmo</span>
@@ -849,6 +835,12 @@ body { display: flex; height: 100vh; background: #F8F7FF; }
 </div><!-- /main-area -->
 
 <script>
+const _sb = (typeof supabase !== 'undefined')
+    ? supabase.createClient(
+        'https://geabugomvgsgemlmxggx.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlYWJ1Z29tdmdzZ2VtbG14Z2d4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwNzU1NTgsImV4cCI6MjEwMTY1MTU1OH0.1dReCnfV-u45mqo1__AD7NNwjRQUWuPzV3WX1RRliZE')
+    : null;
+
 // ── SIMPLE AUTH: localStorage ────────────────────────
 if (localStorage.getItem('duniaguru_logged_in') !== 'true') {
     window.location.href = 'index.html';
@@ -937,28 +929,6 @@ function doLogout() {
 }
 
 // ── FOTO PROFIL ────────────────────────────────────────────────
-function triggerPhotoUpload() {
-    document.getElementById('photo-input').click();
-}
-
-function handlePhotoUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    if (file.size > 2 * 1024 * 1024) {
-        alert('Ukuran foto maksimal 2MB.');
-        return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const photoData = e.target.result;
-        setAvatarPhoto(photoData);
-        localStorage.setItem('duniaguru_photo', photoData);
-    };
-    reader.readAsDataURL(file);
-}
-
 function setAvatarPhoto(photoData) {
     const avatar = document.getElementById('user-avatar');
     if (!avatar) return;
@@ -989,10 +959,26 @@ function setAvatarPhoto(photoData) {
     }
 }
 
-// Load foto yang sudah disimpan
-(function() {
+// Tampilkan foto profil dari localStorage atau Supabase
+(async function() {
+    // Cek localStorage dulu (cepat)
     const saved = localStorage.getItem('duniaguru_photo');
-    if (saved) setAvatarPhoto(saved);
+    if (saved) { setAvatarPhoto(saved); return; }
+
+    // Cek dari Supabase jika ada
+    const userId = localStorage.getItem('duniaguru_user_id');
+    if (!userId || !_sb) return;
+    try {
+        const { data } = await _sb
+            .from('teachers')
+            .select('foto_profil')
+            .eq('id', userId)
+            .single();
+        if (data?.foto_profil) {
+            localStorage.setItem('duniaguru_photo', data.foto_profil);
+            setAvatarPhoto(data.foto_profil);
+        }
+    } catch(e) { console.warn('Foto profil:', e); }
 })();
 </script>
 
