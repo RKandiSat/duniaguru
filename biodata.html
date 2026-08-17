@@ -198,6 +198,10 @@ html,body{height:100%;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif
       </button>
       <button class="step-btn" onclick="goToStep(5)" id="sb-5">
         <div class="step-num">5</div>
+        <div class="step-text">Riwayat Mengajar</div>
+      </button>
+      <button class="step-btn" onclick="goToStep(6)" id="sb-6">
+        <div class="step-num">6</div>
         <div class="step-text">Akun Aplikasi</div>
       </button>
     </div>
@@ -515,8 +519,73 @@ html,body{height:100%;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif
 
       </div>
 
-      <!-- ── STEP 5: Akun Aplikasi ── -->
+      <!-- ── STEP 5: Riwayat Mengajar ── -->
       <div class="form-panel" id="panel-5">
+
+        <div class="form-grid col-2">
+          <div class="field">
+            <label>Sekolah / Instansi Sebelumnya</label>
+            <input type="text" id="riwayat_sekolah_1" placeholder="Nama sekolah tempat mengajar">
+          </div>
+          <div class="field">
+            <label>Tahun Mulai</label>
+            <input type="number" id="riwayat_tahun_mulai_1" placeholder="cth. 2015">
+          </div>
+        </div>
+
+        <div class="form-grid col-2">
+          <div class="field">
+            <label>Tahun Selesai</label>
+            <input type="number" id="riwayat_tahun_selesai_1" placeholder="cth. 2020 (atau kosong jika masih aktif)">
+          </div>
+          <div class="field">
+            <label>Mata Pelajaran Diajarkan</label>
+            <input type="text" id="riwayat_mapel_1" placeholder="cth. Matematika, IPA">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Keterangan Tambahan</label>
+          <input type="text" id="riwayat_ket_1" placeholder="cth. Wali kelas, guru honorer, dll">
+        </div>
+
+        <div style="height:1px;background:rgba(255,255,255,0.06);margin:14px 0;"></div>
+
+        <div class="form-grid col-2">
+          <div class="field">
+            <label>Sekolah / Instansi Sebelumnya (2)</label>
+            <input type="text" id="riwayat_sekolah_2" placeholder="Nama sekolah (opsional)">
+          </div>
+          <div class="field">
+            <label>Tahun Mulai</label>
+            <input type="number" id="riwayat_tahun_mulai_2" placeholder="cth. 2020">
+          </div>
+        </div>
+
+        <div class="form-grid col-2">
+          <div class="field">
+            <label>Tahun Selesai</label>
+            <input type="number" id="riwayat_tahun_selesai_2" placeholder="cth. 2024">
+          </div>
+          <div class="field">
+            <label>Mata Pelajaran Diajarkan</label>
+            <input type="text" id="riwayat_mapel_2" placeholder="cth. Bahasa Indonesia">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Keterangan Tambahan</label>
+          <input type="text" id="riwayat_ket_2" placeholder="cth. Koordinator ekstrakurikuler, dll">
+        </div>
+
+        <div style="font-size:0.7rem;color:rgba(255,255,255,0.25);margin-top:10px;font-style:italic;">
+          * Riwayat mengajar bersifat opsional. Lewati jika tidak ada.
+        </div>
+
+      </div>
+
+      <!-- ── STEP 6: Akun Aplikasi ── -->
+      <div class="form-panel" id="panel-6">
 
         <div class="form-grid col-2" style="margin-bottom:8px;">
           <div class="field">
@@ -548,7 +617,7 @@ html,body{height:100%;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif
     <!-- Footer nav -->
     <div class="form-footer">
       <button class="btn-prev" id="btn-prev" onclick="prevStep()" disabled>← Sebelumnya</button>
-      <div class="step-indicator" id="step-ind">Langkah 1 dari 5</div>
+      <div class="step-indicator" id="step-ind">Langkah 1 dari 6</div>
       <button class="btn-next" id="btn-next" onclick="nextStep()">Lanjut →</button>
     </div>
 
@@ -621,14 +690,15 @@ function prefillForm(d) {
 // STEP NAVIGATION
 // ══════════════════════════════════════════════════════
 let currentStep = 1;
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 const STEP_INFO = {
     1: { title:'Data Pribadi — Identitas Utama', sub:'Isi dengan data sesuai dokumen resmi (KTP)' },
     2: { title:'Identitas Kepegawaian & Status Profesional', sub:'Data kepegawaian dan status mengajar' },
     3: { title:'Riwayat Pendidikan Formal', sub:'Data ijazah dan latar belakang akademik' },
     4: { title:'Data Penugasan Mengajar', sub:'Mata pelajaran, kelas, dan tugas tambahan' },
-    5: { title:'Data Akses & Akun Aplikasi', sub:'Login credentials dan hak akses sistem DuniaGuru' },
+    5: { title:'Riwayat Mengajar', sub:'Pengalaman mengajar di sekolah atau instansi sebelumnya' },
+    6: { title:'Data Akses & Akun Aplikasi', sub:'Login credentials dan hak akses sistem DuniaGuru' },
 };
 
 function goToStep(n) {
