@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Classio — Dashboard</title>
+<title>Dunia Guru — Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Bricolage+Grotesque:wght@700;800&display=swap" rel="stylesheet">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234F46E5'/><text y='22' x='8' font-size='18' font-family='serif' font-weight='bold' fill='white'>C</text></svg>">
@@ -409,7 +409,7 @@ body { display: flex; height: 100vh; background: #F8F7FF; }
 }
 </style>
     </head>
-<body>
+<body style="opacity:0;transition:opacity 0.3s ease;">
 
 <!-- ════════ SIDEBAR ════════ -->
 <aside class="sidebar">
@@ -418,8 +418,8 @@ body { display: flex; height: 100vh; background: #F8F7FF; }
     <div class="sb-brand">
         <div class="sb-logo">C</div>
         <div>
-            <div class="sb-brand-name">Classio</div>
-            <div class="sb-brand-ver">Learning Management System App v15e</div>
+            <div class="sb-brand-name">Dunia Guru</div>
+            <div class="sb-brand-ver">LMS v15 Beta</div>
         </div>
     </div>
 
@@ -478,7 +478,7 @@ body { display: flex; height: 100vh; background: #F8F7FF; }
 
     <!-- Footer — always visible -->
     <div class="sb-footer">
-        <div class="sb-footer-brand">Classio Teaching App</div>
+        <div class="sb-footer-brand">Dunia Guru Teaching App</div>
         <button class="btn-logout" onclick="doLogout()">
             🚪 &nbsp;Keluar
         </button>
@@ -803,9 +803,10 @@ body { display: flex; height: 100vh; background: #F8F7FF; }
 
 /* Module buttons locked state */
 .module-btn.locked {
-    opacity: 0.5;
+    opacity: 0.45;
     cursor: not-allowed;
     filter: grayscale(30%);
+    pointer-events: none;
 }
 .module-btn.locked:hover {
     transform: none !important;
@@ -820,19 +821,21 @@ body { display: flex; height: 100vh; background: #F8F7FF; }
 
 <script>
 // ── SIMPLE AUTH: localStorage ────────────────────────
-if (localStorage.getItem('classio_logged_in') !== 'true') {
+if (localStorage.getItem('duniaguru_logged_in') !== 'true') {
     window.location.href = 'index.html';
+} else {
+    document.body.style.opacity = '1';
 }
 
 // ── LOAD PROFILE ─────────────────────────────────────
 (function() {
-    const name    = localStorage.getItem('classio_teacher_name');
-    const role    = localStorage.getItem('classio_teacher_role');
-    const ini     = localStorage.getItem('classio_teacher_initials');
-    const mapel   = localStorage.getItem('classio_teacher_mapel');
-    const jabatan = localStorage.getItem('classio_teacher_jabatan');
-    const status  = localStorage.getItem('classio_teacher_status');
-    const bioDone = localStorage.getItem('classio_biodata_complete');
+    const name    = localStorage.getItem('duniaguru_teacher_name');
+    const role    = localStorage.getItem('duniaguru_teacher_role');
+    const ini     = localStorage.getItem('duniaguru_teacher_initials');
+    const mapel   = localStorage.getItem('duniaguru_teacher_mapel');
+    const jabatan = localStorage.getItem('duniaguru_teacher_jabatan');
+    const status  = localStorage.getItem('duniaguru_teacher_status');
+    const bioDone = localStorage.getItem('duniaguru_biodata_complete');
 
     const set = (id, val) => { const e=document.getElementById(id); if(e&&val) e.textContent=val; };
 
@@ -846,7 +849,7 @@ if (localStorage.getItem('classio_logged_in') !== 'true') {
         set('meta-status',  status  || '—');
         if (mapel) set('meta-mapel', mapel.split(',')[0]);
     } else {
-        const email = localStorage.getItem('classio_user_email') || '';
+        const email = localStorage.getItem('duniaguru_user_email') || '';
         set('user-name',   email);
         set('user-avatar', email.substring(0,2).toUpperCase());
     }
@@ -857,10 +860,10 @@ if (localStorage.getItem('classio_logged_in') !== 'true') {
     }
 
     // Kunci tombol modul jika biodata belum lengkap
-if (bioDone !== 'true') {
-    document.querySelectorAll('.module-btn').forEach(btn => {
-        btn.classList.add('locked');
-    });
+    if (bioDone !== 'true') {
+        document.querySelectorAll('.module-btn').forEach(btn => {
+            btn.classList.add('locked');
+        });
     }
 })();
 
@@ -875,7 +878,7 @@ const MODULE_VIEWS = ['cptp','kktp','modul','prosem','prota','bahan','akm','ases
 
 function showView(id) {
     // Cek biodata jika bukan dashboard utama
-    const bioDone = localStorage.getItem('classio_biodata_complete');
+    const bioDone = localStorage.getItem('duniaguru_biodata_complete');
     if (bioDone !== 'true' && MODULE_VIEWS.includes(id)) {
         const popup = document.getElementById('popup-biodata');
         if (popup) popup.style.display = 'flex';
@@ -898,7 +901,7 @@ function goToEditProfil() {
 
 // ── LOGOUT ───────────────────────────────────────────
 function doLogout() {
-    if (confirm('Yakin ingin keluar dari Classio?')) {
+    if (confirm('Yakin ingin keluar dari Dunia Guru?')) {
         localStorage.clear();
         window.location.href = 'index.html';
     }

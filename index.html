@@ -551,7 +551,7 @@
         .trust-text b { color: rgba(52,211,153,0.8); }
 
         /* Spinner */
-        .spinner {
+        .spinner { 
             display: inline-block;
             width: 13px; height: 13px;
             border: 2px solid rgba(255,255,255,0.3);
@@ -618,7 +618,7 @@
             font-weight: 700;
             letter-spacing: 0.5px;
             text-transform: uppercase;
-            line-height: 1.35;
+            line-height: 1.35;  
         }
         .ring-dot-label {
             position: absolute;
@@ -639,7 +639,7 @@
         }
     </style>
 </head>
-<body>
+<body style="opacity:0;transition:opacity 0.3s ease;">
 
 <!-- Dark background -->
 <div class="bg-canvas">
@@ -948,6 +948,8 @@ try {
 // Sudah login? Langsung ke dashboard
 if (localStorage.getItem('duniaguru_logged_in') === 'true') {
     window.location.href = 'dashboard.html';
+} else {
+    document.body.style.opacity = '1';
 }
 
 // ── LOGIN DENGAN PASSCODE ─────────────────────────────
@@ -1024,7 +1026,7 @@ async function doLogin() {
         localStorage.setItem('duniaguru_teacher_jabatan',  data.jabatan || '');
         localStorage.setItem('duniaguru_teacher_status',   data.status_kepegawaian || '');
         localStorage.setItem('duniaguru_teacher_mapel',    Array.isArray(data.mata_pelajaran) ? data.mata_pelajaran.join(', ') : '');
-        localStorage.setItem('duniaguru_biodata_complete', data.biodata_complete ? 'true' : 'false');
+        localStorage.setItem('duniaguru_biodata_complete', (data.biodata_complete === true) ? 'true' : 'false');
 
         // Notifikasi sukses
         if (sucEl) {
@@ -1039,7 +1041,7 @@ async function doLogin() {
 
         // Redirect berdasarkan status biodata
         setTimeout(() => {
-            window.location.href = data.biodata_complete ? 'dashboard.html' : 'biodata.html';
+            window.location.href = (data.biodata_complete === true) ? 'dashboard.html' : 'biodata.html';
         }, 1500);
 
     } catch(err) {

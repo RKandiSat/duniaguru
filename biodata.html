@@ -155,7 +155,7 @@ html,body{height:100%;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif
 </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body>
+<body style="opacity:0;transition:opacity 0.3s ease;">
 
 <!-- Background -->
 <div class="bg">
@@ -170,9 +170,7 @@ html,body{height:100%;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif
   <!-- ═══ SIDEBAR ═══ -->
   <div class="sidebar">
     <div class="brand">
-      <div class="brand-icon">
-        img src="" alt="Dunia Guru" style="width:100%;height:100%; object-fit:contain;border-radius:8px;">
-      </div>
+      <div class="brand-icon">C</div>
       <div>
         <div class="brand-name">Classio</div>
         <div class="brand-ver">Biodata Guru</div>
@@ -562,38 +560,26 @@ html,body{height:100%;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif
 const sb = supabase.createClient('https://geabugomvgsgemlmxggx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlYWJ1Z29tdmdzZ2VtbG14Z2d4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwNzU1NTgsImV4cCI6MjEwMTY1MTU1OH0.1dReCnfV-u45mqo1__AD7NNwjRQUWuPzV3WX1RRliZE');
 
 // ── AUTH: localStorage check ──────────────────────────
-if (localStorage.getItem('classio_logged_in') !== 'true') {
+if (localStorage.getItem('duniaguru_logged_in') !== 'true') {
     window.location.href = 'index.html';
+} else {
+    document.body.style.opacity = '1';
 }
 
-let _userId    = localStorage.getItem('classio_user_id') || null;
-let _userEmail = localStorage.getItem('classio_user_email') || null;
+let _userId    = localStorage.getItem('duniaguru_user_id') || null;
+let _userEmail = localStorage.getItem('duniaguru_user_email') || null;
 
 (async () => {
-    // Skip Supabase check untuk demo user
-    if (_userId === 'demo-user' || !_userId) return;
+    // Passcode system — no Supabase session needed
 
-    // Cek sesi Supabase untuk user nyata
-    try {
-        const { data: { session } } = await sb.auth.getSession();
-        if (session) {
-            _userId    = session.user.id;
-            _userEmail = session.user.email;
-        }
+    // Pre-fill form if editing existing biodata
+    const { data: existing } = await sb
+        .from('teachers')
+        .select('*')
+        .eq('id', _userId)
+        .single();
 
-        // Pre-fill form jika data sudah pernah diisi
-        if (_userId) {
-            const { data: existing } = await sb
-                .from('teachers')
-                .select('*')
-                .eq('id', _userId)
-                .single();
-
-            if (existing) prefillForm(existing);
-        }
-    } catch(e) {
-        console.warn('Session check failed:', e);
-    }
+    if (existing) prefillForm(existing);
 })();
 
 function prefillForm(d) {
@@ -766,20 +752,8 @@ async function submitData() {
     btn.textContent = '⏳ Menyimpan...';
     btn.disabled = true;
 
-    // Demo user — simpan ke localStorage saja
-const isDemo = _userId === 'demo-user' || !_userId;
-if (isDemo) {
-    showSuccess(document.getElementById('nama_lengkap')?.value || 'Demo');
-    return;
-}
-
-// Real user — cek session Supabase
- const { data: { session } } = await sb.auth.getSession();
-if (!session) {
-    alert('Sesi habis. Silakan login kembali.');
-    window.location.href = 'index.html';
-    return;
-}
+    const userId = localStorage.getItem('duniaguru_user_id');
+    if (!userId) { alert('Sesi habis. Silakan login kembali.'); window.location.href='index.html'; return; }
 
     const get = id => document.getElementById(id)?.value?.trim() || null;
     if (!get('nama_lengkap') || !get('nik') || !get('email')) {
@@ -789,7 +763,7 @@ if (!session) {
     const tugas = get('tugas_tambahan')==='Lain-lain' ? (get('tugas_lainnya')||'') : (get('tugas_tambahan')||'');
 
     const payload = {
-        id: session.user.id, email: session.user.email,
+        id: userId, email: get('email') || _userEmail || '',
         nama_lengkap: get('nama_lengkap'), gelar_depan: get('gelar_depan'),
         gelar_belakang: get('gelar_belakang'), jenis_kelamin: get('jenis_kelamin'),
         nik: get('nik'), agama: get('agama'), tempat_lahir: get('tempat_lahir'),
@@ -806,7 +780,7 @@ if (!session) {
         mata_pelajaran: selectedMapel, kelas_diajar: selectedKelas,
         jam_mengajar: get('jam_mengajar') ? parseInt(get('jam_mengajar')) : null,
         tugas_tambahan: tugas,
-        username_email: get('username_email') || session.user.email,
+        username_email: get('username_email') || _userEmail || '',
         role: get('role') || 'Guru Reguler',
         status_akun: 'Aktif', biodata_complete: true,
     };
@@ -828,13 +802,13 @@ function showSuccess(nama) {
     const gelar = document.getElementById('gelar_belakang')?.value || '';
     const fullName = (nama + (gelar ? ', ' + gelar : '')).trim();
     const initials = nama.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
-    localStorage.setItem('classio_teacher_name',     fullName);
-    localStorage.setItem('classio_teacher_initials', initials);
-    localStorage.setItem('classio_teacher_role',     document.getElementById('role')?.value || 'Guru');
-    localStorage.setItem('classio_teacher_jabatan',  document.getElementById('jabatan')?.value || '');
-    localStorage.setItem('classio_teacher_status',   document.getElementById('status_kepegawaian')?.value || '');
-    localStorage.setItem('classio_teacher_mapel',    selectedMapel.join(', '));
-    localStorage.setItem('classio_biodata_complete', 'true');
+    localStorage.setItem('duniaguru_teacher_name',     fullName);
+    localStorage.setItem('duniaguru_teacher_initials', initials);
+    localStorage.setItem('duniaguru_teacher_role',     document.getElementById('role')?.value || 'Guru');
+    localStorage.setItem('duniaguru_teacher_jabatan',  document.getElementById('jabatan')?.value || '');
+    localStorage.setItem('duniaguru_teacher_status',   document.getElementById('status_kepegawaian')?.value || '');
+    localStorage.setItem('duniaguru_teacher_mapel',    selectedMapel.join(', '));
+    localStorage.setItem('duniaguru_biodata_complete', 'true');
 
     document.getElementById('status-badge').classList.add('show');
     document.getElementById('prog-fill').style.width = '100%';
