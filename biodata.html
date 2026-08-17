@@ -70,7 +70,7 @@ html,body{height:100%;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
 
 /* Form panels */
-.form-body{flex:1;overflow:hidden;position:relative;}
+.form-body{flex:1;overflow:hidden;position:relative;min-height:0;}
 .form-panel{position:absolute;inset:0;padding:16px 24px;display:none;overflow-y:auto;}
 .form-panel.active{display:block;}
 
@@ -702,6 +702,7 @@ const STEP_INFO = {
 };
 
 function goToStep(n) {
+    try {
     if (n < 1 || n > TOTAL_STEPS) return;
     document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.step-btn').forEach(b => {
@@ -731,6 +732,7 @@ function goToStep(n) {
     const pct = Math.round(((n-1)/TOTAL_STEPS)*100);
     document.getElementById('prog-fill').style.width = pct + '%';
     document.getElementById('prog-pct').textContent  = pct + '%';
+    } catch(e) { console.error('goToStep error:', e); }
 }
 
 function nextStep() { goToStep(currentStep + 1); }
@@ -896,9 +898,12 @@ function showSuccess(nama) {
 }
 
 // ── INIT ──────────────────────────────────────────────
-buildMultiOpts('mapel','mapel-opts','mapel-pills',selectedMapel,MAPEL_LIST);
-buildMultiOpts('kelas','kelas-opts','kelas-pills',selectedKelas,KELAS_LIST);
-goToStep(1);
+setTimeout(function() {
+    buildMultiOpts('mapel','mapel-opts','mapel-pills',selectedMapel,MAPEL_LIST);
+    buildMultiOpts('kelas','kelas-opts','kelas-fills',selectedKelas,KELAS_LIST);
+    buildMultiOpts('kelas','kelas-opts','kelas-pills',selectedKelas,KELAS_LIST);
+    goToStep(1);
+}, 50);
 </script>
 
 </body>
