@@ -668,6 +668,12 @@ function prefillForm(d) {
     set('tahun_lulus', d.tahun_lulus); set('prodi', d.prodi);
     set('universitas', d.universitas); set('jam_mengajar', d.jam_mengajar);
     set('username_email', d.username_email || _userEmail); set('role', d.role);
+    set('riwayat_sekolah_1', d.riwayat_sekolah_1); set('riwayat_tahun_mulai_1', d.riwayat_tahun_mulai_1);
+    set('riwayat_tahun_selesai_1', d.riwayat_tahun_selesai_1); set('riwayat_mapel_1', d.riwayat_mapel_1);
+    set('riwayat_ket_1', d.riwayat_ket_1);
+    set('riwayat_sekolah_2', d.riwayat_sekolah_2); set('riwayat_tahun_mulai_2', d.riwayat_tahun_mulai_2);
+    set('riwayat_tahun_selesai_2', d.riwayat_tahun_selesai_2); set('riwayat_mapel_2', d.riwayat_mapel_2);
+    set('riwayat_ket_2', d.riwayat_ket_2);
     if (Array.isArray(d.mata_pelajaran)) {
         selectedMapel = [...d.mata_pelajaran];
         buildMultiOpts('mapel','mapel-opts','mapel-pills',selectedMapel,MAPEL_LIST);
@@ -850,6 +856,16 @@ async function submitData() {
         mata_pelajaran: selectedMapel, kelas_diajar: selectedKelas,
         jam_mengajar: get('jam_mengajar') ? parseInt(get('jam_mengajar')) : null,
         tugas_tambahan: tugas,
+        riwayat_sekolah_1: get('riwayat_sekolah_1'),
+        riwayat_tahun_mulai_1: get('riwayat_tahun_mulai_1') ? parseInt(get('riwayat_tahun_mulai_1')) : null,
+        riwayat_tahun_selesai_1: get('riwayat_tahun_selesai_1') ? parseInt(get('riwayat_tahun_selesai_1')) : null,
+        riwayat_mapel_1: get('riwayat_mapel_1'),
+        riwayat_ket_1: get('riwayat_ket_1'),
+        riwayat_sekolah_2: get('riwayat_sekolah_2'),
+        riwayat_tahun_mulai_2: get('riwayat_tahun_mulai_2') ? parseInt(get('riwayat_tahun_mulai_2')) : null,
+        riwayat_tahun_selesai_2: get('riwayat_tahun_selesai_2') ? parseInt(get('riwayat_tahun_selesai_2')) : null,
+        riwayat_mapel_2: get('riwayat_mapel_2'),
+        riwayat_ket_2: get('riwayat_ket_2'),
         username_email: get('username_email') || _userEmail || '',
         role: get('role') || 'Guru Reguler',
         status_akun: 'Aktif', biodata_complete: true,
