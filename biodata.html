@@ -21,7 +21,7 @@ html,body{height:100%;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif
 .dot-grid{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(99,102,241,0.12) 1px,transparent 1px);background-size:28px 28px;}
 @keyframes drift1{0%,100%{transform:translate(0,0);}50%{transform:translate(60px,40px);}}
 @keyframes drift2{0%,100%{transform:translate(0,0);}50%{transform:translate(-40px,-60px);}}
-@keyframes drift3{0%,100%{transform:translate(0,0);}50%{transform:translate(30px,-30px);}}git add .
+@keyframes drift3{0%,100%{transform:translate(0,0);}50%{transform:translate(30px,-30px);}}
 
 /* ═══ LAYOUT ═══ */
 .layout{position:relative;z-index:1;display:flex;height:100vh;width:100%;}
@@ -70,7 +70,7 @@ html,body{height:100%;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
 
 /* Form panels */
-.form-body{flex:1;overflow:hidden;position:relative;min-height:0;}
+.form-body{flex:1;overflow:hidden;position:relative;}
 .form-panel{position:absolute;inset:0;padding:16px 24px;display:none;overflow-y:auto;}
 .form-panel.active{display:block;}
 
@@ -702,7 +702,6 @@ const STEP_INFO = {
 };
 
 function goToStep(n) {
-    try {
     if (n < 1 || n > TOTAL_STEPS) return;
     document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.step-btn').forEach(b => {
@@ -732,7 +731,6 @@ function goToStep(n) {
     const pct = Math.round(((n-1)/TOTAL_STEPS)*100);
     document.getElementById('prog-fill').style.width = pct + '%';
     document.getElementById('prog-pct').textContent  = pct + '%';
-    } catch(e) { console.error('goToStep error:', e); }
 }
 
 function nextStep() { goToStep(currentStep + 1); }
@@ -898,12 +896,9 @@ function showSuccess(nama) {
 }
 
 // ── INIT ──────────────────────────────────────────────
-setTimeout(function() {
-    buildMultiOpts('mapel','mapel-opts','mapel-pills',selectedMapel,MAPEL_LIST);
-    buildMultiOpts('kelas','kelas-opts','kelas-fills',selectedKelas,KELAS_LIST);
-    buildMultiOpts('kelas','kelas-opts','kelas-pills',selectedKelas,KELAS_LIST);
-    goToStep(1);
-}, 50);
+buildMultiOpts('mapel','mapel-opts','mapel-pills',selectedMapel,MAPEL_LIST);
+buildMultiOpts('kelas','kelas-opts','kelas-pills',selectedKelas,KELAS_LIST);
+goToStep(1);
 </script>
 
 </body>
