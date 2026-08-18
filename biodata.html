@@ -729,6 +729,15 @@ function prefillForm(d) {
             if (!opt) { document.getElementById('tugas_lainnya').value = d.tugas_tambahan; checkOther(); }
         }
     }
+    if (d.foto_profil) {
+    const previewImg = document.getElementById('photo-preview-img');
+    const initials   = document.getElementById('photo-initials');
+    if (previewImg) {
+        previewImg.src = d.foto_profil;
+        previewImg.style.display = 'block';
+    }
+    if (initials) initials.style.display = 'none';
+  }
 }
 
 // ══════════════════════════════════════════════════════
