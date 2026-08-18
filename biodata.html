@@ -204,6 +204,10 @@ html,body{height:100%;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif
         <div class="step-num">6</div>
         <div class="step-text">Akun Aplikasi</div>
       </button>
+      <button class="step-btn" onclick="goToStep(7)" id="sb-7">
+        <div class="step-num">7</div>
+        <div class="step-text">Foto Profil</div>
+      </button>
     </div>
 
     <div class="prog-wrap">
@@ -612,12 +616,47 @@ html,body{height:100%;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif
         </div>
 
       </div>
+
+      <!-- ── STEP 7: Foto Profil ── -->
+      <div class="form-panel" id="panel-7">
+
+        <div style="text-align:center;padding:20px 0;">
+
+          <div style="font-size:0.75rem;font-weight:700;color:#a5b4fc;text-transform:uppercase;letter-spacing:1px;margin-bottom:18px;">
+            📸 Upload Foto Profil (Opsional)
+          </div>
+
+          <div id="photo-preview-wrap" style="width:110px;height:110px;border-radius:50%;
+              background:linear-gradient(135deg,#4F46E5,#7C3AED);
+              margin:0 auto 16px;display:flex;align-items:center;justify-content:center;
+              font-size:1.9rem;font-weight:800;color:white;cursor:pointer;
+              border:3px solid rgba(79,70,229,0.4);overflow:hidden;position:relative;
+              transition:border-color 0.2s;"
+              onclick="document.getElementById('foto-input').click()"
+              title="Klik untuk pilih foto">
+            <span id="photo-initials">?</span>
+            <img id="photo-preview-img" src="" alt=""
+                style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">
+          </div>
+
+          <input type="file" id="foto-input" accept="image/*" style="display:none;" onchange="handleFotoUpload(event)">
+
+          <div style="font-size:0.72rem;color:rgba(255,255,255,0.35);margin-bottom:8px;line-height:1.6;">
+            Klik lingkaran di atas untuk pilih foto<br>
+            Format: JPG, PNG • Maksimal 2MB
+          </div>
+
+          <div id="foto-status" style="display:none;font-size:0.72rem;margin-top:6px;"></div>
+
+        </div>
+
+      </div>
     </div>
 
     <!-- Footer nav -->
     <div class="form-footer">
       <button class="btn-prev" id="btn-prev" onclick="prevStep()" disabled>← Sebelumnya</button>
-      <div class="step-indicator" id="step-ind">Langkah 1 dari 6</div>
+      <div class="step-indicator" id="step-ind">Langkah 1 dari 7</div>
       <button class="btn-next" id="btn-next" onclick="nextStep()">Lanjut →</button>
     </div>
 
@@ -696,7 +735,7 @@ function prefillForm(d) {
 // STEP NAVIGATION
 // ══════════════════════════════════════════════════════
 let currentStep = 1;
-const TOTAL_STEPS = 6;
+const TOTAL_STEPS = 7;
 
 const STEP_INFO = {
     1: { title:'Data Pribadi — Identitas Utama', sub:'Isi dengan data sesuai dokumen resmi (KTP)' },
@@ -705,6 +744,7 @@ const STEP_INFO = {
     4: { title:'Data Penugasan Mengajar', sub:'Mata pelajaran, kelas, dan tugas tambahan' },
     5: { title:'Riwayat Mengajar', sub:'Pengalaman mengajar di sekolah atau instansi sebelumnya' },
     6: { title:'Data Akses & Akun Aplikasi', sub:'Login credentials dan hak akses sistem DuniaGuru' },
+    7: { title:'Upload Foto Profil', sub:'Tambahkan foto agar profil lebih mudah dikenali (opsional)' },
 };
 
 function goToStep(n) {
@@ -724,11 +764,15 @@ function goToStep(n) {
     document.getElementById('step-ind').textContent    = `Langkah ${n} dari ${TOTAL_STEPS}`;
     document.getElementById('btn-prev').disabled = n === 1;
     const btnNext = document.getElementById('btn-next');
-    if (n === TOTAL_STEPS) {
+    if (n === 6) {
         btnNext.textContent = '✓ Masukkan Data';
         btnNext.className   = 'btn-submit';
         btnNext.onclick     = submitData;
         updateSummary();
+    } else if (n === 7) {
+        btnNext.textContent = '✓ Selesai — Ke Dashboard';
+        btnNext.className   = 'btn-submit';
+        btnNext.onclick     = () => window.location.href = 'dashboard.html';
     } else {
         btnNext.textContent = 'Lanjut →';
         btnNext.className   = 'btn-next';
@@ -801,6 +845,62 @@ document.addEventListener('click', e => {
 function checkOther() {
     const val = document.getElementById('tugas_tambahan').value;
     document.getElementById('tugas-other-wrap').className = 'other-wrap' + (val==='Lain-lain'?' show':'');
+}
+
+// ══════════════════════════════════════════════════════
+// UPLOAD FOTO PROFIL (Step 7)
+// ══════════════════════════════════════════════════════
+async function handleFotoUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+        alert('Ukuran foto maksimal 2MB.');
+        return;
+    }
+
+    const status = document.getElementById('foto-status');
+    status.textContent = '⏳ Mengupload foto...';
+    status.style.color = '#a5b4fc';
+    status.style.display = 'block';
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        const previewImg = document.getElementById('photo-preview-img');
+        const initials   = document.getElementById('photo-initials');
+        previewImg.src   = e.target.result;
+        previewImg.style.display = 'block';
+        if (initials) initials.style.display = 'none';
+
+        const userId   = localStorage.getItem('duniaguru_user_id');
+        const fileName = `${userId}/profil.${file.name.split('.').pop()}`;
+
+        try {
+            const { error: upErr } = await sb.storage
+                .from('profile-photos')
+                .upload(fileName, file, { upsert: true });
+            if (upErr) throw upErr;
+
+            const { data: urlData } = sb.storage
+                .from('profile-photos')
+                .getPublicUrl(fileName);
+            const publicUrl = urlData.publicUrl;
+
+            await sb.from('teachers')
+                .update({ foto_profil: publicUrl })
+                .eq('id', userId);
+
+            localStorage.setItem('duniaguru_photo', publicUrl);
+            status.textContent = '✅ Foto berhasil diupload!';
+            status.style.color = '#34D399';
+        } catch(err) {
+            console.error('Upload error:', err);
+            localStorage.setItem('duniaguru_photo', e.target.result);
+            status.textContent = '✅ Foto tersimpan di perangkat ini.';
+            status.style.color = '#34D399';
+        }
+    };
+    reader.readAsDataURL(file);
 }
 
 // ══════════════════════════════════════════════════════
@@ -897,18 +997,13 @@ function showSuccess(nama) {
     localStorage.setItem('duniaguru_biodata_complete', 'true');
 
     document.getElementById('status-badge').classList.add('show');
-    document.getElementById('prog-fill').style.width = '100%';
-    document.getElementById('prog-pct').textContent  = '100%';
-    document.querySelectorAll('.step-btn').forEach(b => { b.classList.add('done'); b.classList.remove('active'); });
-    document.getElementById('panel-title').textContent = '✅ Data Berhasil Disimpan!';
-    document.getElementById('panel-sub').textContent   = `Biodata ${nama||'Anda'} telah tersimpan. Dashboard siap diakses.`;
-    const btn = document.getElementById('btn-next');
-    btn.textContent = '→ Lanjut ke Dashboard';
-    btn.style.background = 'linear-gradient(135deg,#10B981,#059669)';
-    btn.style.boxShadow  = '0 4px 14px rgba(16,185,129,0.4)';
-    btn.disabled  = false;
-    btn.className = 'btn-submit';
-    btn.onclick   = () => window.location.href = 'dashboard.html';
+
+    // Siapkan inisial di panel upload foto, lalu pindah ke step 7
+    const photoInitials = document.getElementById('photo-initials');
+    if (photoInitials) photoInitials.textContent = initials || '?';
+
+    goToStep(7);
+    document.getElementById('btn-next').disabled = false;
 }
 
 // ── INIT ──────────────────────────────────────────────
