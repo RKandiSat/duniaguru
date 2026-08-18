@@ -937,6 +937,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="window._supaFailed=true"></script>
 <script>
+    
 // ── SUPABASE ──────────────────────────────────────────
 let _sb = null;
 try {
@@ -951,6 +952,25 @@ if (localStorage.getItem('duniaguru_logged_in') === 'true') {
 } else {
     document.body.style.opacity = '1';
 }
+
+(async function() {
+    const saved = localStorage.getItem('duniaguru_photo');
+    if (saved) { setAvatarPhoto(saved); return; }
+
+    const userId = localStorage.getItem('duniaguru_user_id');
+    if (!userId || !_sb) return;
+    try {
+        const { data } = await _sb
+            .from('teachers')
+            .select('foto_profil')
+            .eq('id', userId)
+            .single();
+        if (data?.foto_profil) {
+            localStorage.setItem('duniaguru_photo', data.foto_profil);
+            setAvatarPhoto(data.foto_profil);
+        }
+    } catch(e) { console.warn('Foto profil:', e); }
+})();
 
 // ── LOGIN DENGAN PASSCODE ─────────────────────────────
 async function doLogin() {
