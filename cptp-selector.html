@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dunia Guru — Pilih Program CP & TP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Bricolage+Grotesque:wght@700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234F46E5'/><text y='22' x='8' font-size='18' font-family='serif' font-weight='bold' fill='white'>C</text></svg>">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden; }
+body {
+    display: flex; align-items: center; justify-content: center;
+    height: 100vh; background: #0F172A;
+    opacity: 0; transition: opacity 0.3s ease;
+    position: relative; overflow: hidden;
+}
+
+/* Aurora background */
+.aurora { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.35; }
+.b1 { width: 480px; height: 480px; background: radial-gradient(circle,#4F46E5,#7C3AED); top: -140px; left: -100px; }
+.b2 { width: 400px; height: 400px; background: radial-gradient(circle,#10B981,#059669); bottom: -120px; right: -80px; }
+.dot-grid { position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 26px 26px; }
+
+.card {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 620px; margin: 24px;
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 22px;
+    padding: 32px 36px;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.5);
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+}
+
+.card-icon {
+    width: 52px; height: 52px; margin-bottom: 14px;
+    background: linear-gradient(135deg, rgba(79,70,229,0.25), rgba(16,185,129,0.25));
+    border: 1.5px solid rgba(99,102,241,0.35);
+    border-radius: 15px; display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+}
+.card-title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 1.3rem; font-weight: 800; color: white; margin-bottom: 4px;
+}
+.card-sub { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 26px; line-height: 1.5; }
+
+/* Auto-filled info */
+.auto-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 22px; }
+.auto-box {
+    background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.18);
+    border-radius: 12px; padding: 11px 14px;
+}
+.auto-label {
+    font-size: 0.6rem; font-weight: 700; color: rgba(110,231,183,0.8);
+    text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px;
+    display: flex; align-items: center; gap: 5px;
+}
+.auto-value { font-size: 0.84rem; font-weight: 700; color: white; }
+
+/* Form fields */
+.field-group { margin-bottom: 16px; }
+.field-label {
+    display: block; font-size: 0.68rem; font-weight: 700;
+    color: rgba(255,255,255,0.4); text-transform: uppercase;
+    letter-spacing: 0.8px; margin-bottom: 7px;
+}
+.field-select {
+    width: 100%; padding: 12px 14px;
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 11px; color: white;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.85rem; font-weight: 600;
+    cursor: pointer; outline: none; transition: all 0.2s;
+    appearance: none; -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.4)' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center;
+}
+.field-select:focus { border-color: rgba(99,102,241,0.6); background-color: rgba(255,255,255,0.08); box-shadow: 0 0 0 3px rgba(79,70,229,0.15); }
+.field-select option { background: #1a1830; color: white; }
+
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* Fase pills */
+.fase-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.fase-pill {
+    padding: 12px 0; text-align: center; border-radius: 10px;
+    border: 1.5px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04);
+    cursor: pointer; transition: all 0.18s;
+}
+.fase-pill .huruf { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.05rem; font-weight: 800; color: rgba(255,255,255,0.5); }
+.fase-pill:hover { border-color: rgba(99,102,241,0.4); background: rgba(255,255,255,0.07); }
+.fase-pill.selected { border-color: #4F46E5; background: linear-gradient(135deg, rgba(79,70,229,0.25), rgba(124,58,237,0.2)); }
+.fase-pill.selected .huruf { color: white; }
+
+/* Submit */
+.btn-lanjut {
+    width: 100%; margin-top: 24px; padding: 14px;
+    border: none; border-radius: 13px;
+    background: linear-gradient(135deg, #4F46E5, #7C3AED);
+    color: white; font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.92rem; font-weight: 800; cursor: pointer;
+    box-shadow: 0 6px 20px rgba(79,70,229,0.4);
+    transition: all 0.2s;
+}
+.btn-lanjut:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(79,70,229,0.5); }
+.btn-lanjut:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.hint { text-align: center; font-size: 0.68rem; color: rgba(255,255,255,0.25); margin-top: 12px; }
+</style>
+</head>
+<body>
+
+<div class="aurora">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="dot-grid"></div>
+</div>
+
+<div class="card">
+    <div class="card-icon">📘</div>
+    <div class="card-title">Pilih Program CP & TP</div>
+    <div class="card-sub">Tentukan mata pelajaran dan fase sebelum melihat isi Capaian Pembelajaran & Tujuan Pembelajaran.</div>
+
+    <!-- Data otomatis dari biodata -->
+    <div class="auto-grid">
+        <div class="auto-box">
+            <div class="auto-label">✓ Nama Guru</div>
+            <div class="auto-value" id="info-nama">Memuat…</div>
+        </div>
+        <div class="auto-box">
+            <div class="auto-label">✓ NIK</div>
+            <div class="auto-value" id="info-nik">Memuat…</div>
+        </div>
+    </div>
+
+    <!-- Status & Satuan Pendidikan -->
+    <div class="field-row">
+        <div class="field-group">
+            <label class="field-label">Status</label>
+            <select class="field-select" id="sel-status">
+                <option value="">— Pilih Status —</option>
+                <option>PNS</option>
+                <option>ASN</option>
+                <option>Non-ASN</option>
+            </select>
+        </div>
+        <div class="field-group">
+            <label class="field-label">Satuan Pendidikan</label>
+            <select class="field-select" id="sel-satuan">
+                <option value="">— Pilih Satuan —</option>
+                <option>PKBM</option>
+                <option>SKB</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Mata Pelajaran -->
+    <div class="field-group">
+        <label class="field-label">Mata Pelajaran</label>
+        <select class="field-select" id="sel-mapel">
+            <option value="">— Pilih Mata Pelajaran —</option>
+            <option>Pendidikan Agama dan Budi Pekerti</option>
+            <option>Pendidikan Pancasila (PPKn)</option>
+            <option>Bahasa Indonesia (Literasi Dasar)</option>
+            <option>Matematika (Numerasi Dasar)</option>
+            <option>Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)</option>
+            <option>Seni dan Budaya (Seni Rupa, Musik, Teater, atau Tari)</option>
+            <option>Ilmu Pengetahuan Alam dan Sosial (IPAS)</option>
+        </select>
+    </div>
+
+    <!-- Fase -->
+    <div class="field-group">
+        <label class="field-label">Fase</label>
+        <div class="fase-grid" id="fase-grid">
+            <div class="fase-pill" data-fase="A"><div class="huruf">A</div></div>
+            <div class="fase-pill" data-fase="B"><div class="huruf">B</div></div>
+            <div class="fase-pill" data-fase="C"><div class="huruf">C</div></div>
+            <div class="fase-pill" data-fase="D"><div class="huruf">D</div></div>
+            <div class="fase-pill" data-fase="E"><div class="huruf">E</div></div>
+            <div class="fase-pill" data-fase="F"><div class="huruf">F</div></div>
+        </div>
+    </div>
+
+    <button class="btn-lanjut" id="btn-lanjut" disabled onclick="lanjutkan()">
+        Lihat CP & TP →
+    </button>
+    <div class="hint">Lengkapi semua pilihan di atas untuk melanjutkan</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const _sb = (typeof supabase !== 'undefined')
+    ? supabase.createClient(
+        'https://geabugomvgsgemlmxggx.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlYWJ1Z29tdmdzZ2VtbG14Z2d4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwNzU1NTgsImV4cCI6MjEwMTY1MTU1OH0.1dReCnfV-u45mqo1__AD7NNwjRQUWuPzV3WX1RRliZE')
+    : null;
+
+if (localStorage.getItem('duniaguru_logged_in') !== 'true') {
+    window.location.href = 'index.html';
+} else {
+    document.body.style.opacity = '1';
+}
+
+// ── ISI NAMA & NIK OTOMATIS DARI BIODATA ─────────────
+(async function loadBiodata() {
+    const nm = localStorage.getItem('duniaguru_teacher_name');
+    if (nm) document.getElementById('info-nama').textContent = nm;
+
+    const userId = localStorage.getItem('duniaguru_user_id');
+    if (!userId || !_sb) return;
+    try {
+        const { data } = await _sb.from('teachers').select('nik, nama_lengkap').eq('id', userId).single();
+        if (data?.nik) document.getElementById('info-nik').textContent = data.nik;
+        if (data?.nama_lengkap) document.getElementById('info-nama').textContent = data.nama_lengkap;
+    } catch(e) {
+        console.warn('Gagal muat biodata:', e);
+        document.getElementById('info-nik').textContent = '—';
+    }
+})();
+
+// ── PILIH FASE ────────────────────────────────────────
+let selectedFase = null;
+document.querySelectorAll('.fase-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+        document.querySelectorAll('.fase-pill').forEach(p => p.classList.remove('selected'));
+        pill.classList.add('selected');
+        selectedFase = pill.dataset.fase;
+        checkFormComplete();
+    });
+});
+
+// ── CEK KELENGKAPAN FORM ─────────────────────────────
+function checkFormComplete() {
+    const status = document.getElementById('sel-status').value;
+    const satuan = document.getElementById('sel-satuan').value;
+    const mapel  = document.getElementById('sel-mapel').value;
+    const btn    = document.getElementById('btn-lanjut');
+
+    const lengkap = status && satuan && mapel && selectedFase;
+    btn.disabled = !lengkap;
+}
+
+['sel-status', 'sel-satuan', 'sel-mapel'].forEach(id => {
+    document.getElementById(id).addEventListener('change', checkFormComplete);
+});
+
+// ── LANJUTKAN ─────────────────────────────────────────
+function lanjutkan() {
+    const pilihan = {
+        status: document.getElementById('sel-status').value,
+        satuan: document.getElementById('sel-satuan').value,
+        mapel:  document.getElementById('sel-mapel').value,
+        fase:   selectedFase,
+    };
+    localStorage.setItem('duniaguru_cptp_pilihan', JSON.stringify(pilihan));
+    alert('Pilihan tersimpan:\\n\\n' +
+        'Status: ' + pilihan.status + '\\n' +
+        'Satuan: ' + pilihan.satuan + '\\n' +
+        'Mapel: ' + pilihan.mapel + '\\n' +
+        'Fase: ' + pilihan.fase + '\\n\\n' +
+        'Halaman konten CP & TP akan dihubungkan pada tahap berikutnya.');
+}
+</script>
+
+</body>
+</html>
